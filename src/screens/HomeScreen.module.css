@@ -169,17 +169,27 @@
   .profileBtn,
   .greeting,
   .alarmBtn {
-    /* was: top: 60px (design-canvas absolute).
-       now: safe-area-inset-top + 10 = tight air-gap below notch. */
-    top: calc(env(safe-area-inset-top, 0px) + 10px);
+    /* Per user: "위에 있는 애들은 맨 위에서 40px 아래". A flat 40pt
+       offset from the physical viewport top (no safe-area math).
+       On iPhone 13 the notch is centre-positioned and ~47pt tall,
+       but the profile (left:25, width:44) and alarm (left:324)
+       sit to either side of the notch, and the greeting text
+       (left:82) begins just past the notch's left edge — so a
+       40pt top doesn't collide with any notch/island geometry
+       on current iPhone hardware. Likewise on Dynamic-Island
+       models: the island spans ~122pt centred horizontally, well
+       clear of this screen's chrome at 40pt y. */
+    top: 40px;
   }
 
   .navBar,
   .chatBtn {
-    /* was: calc(30px + safe-area-bottom) — 30pt cushion above
-       home indicator. now: 14pt so nav visibly hugs the bottom
-       gesture bar. */
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 14px);
+    /* Per user: "밑에 있는 애들은 화면 맨 밑에서 위로 40px". Flat
+       40pt from physical viewport bottom. The 34pt home-indicator
+       gesture region is visually subtle, so a 40pt anchor still
+       keeps nav tap-targets clear of the system gesture area
+       while reading as "hugging the bottom". */
+    bottom: 40px;
   }
 
   /* Character re-centres vertically on viewport, not canvas.
