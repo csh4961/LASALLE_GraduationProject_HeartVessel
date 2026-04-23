@@ -3,17 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <!-- interactive-widget=resizes-content tells the browser to RESIZE the
-         layout viewport (not just the visual viewport) when the software
-         keyboard opens. Without it, iOS Safari leaves layout viewport
-         untouched, so elements pinned with `position: absolute; bottom: 0`
-         stay at the page-bottom *behind* the keyboard — which is why the
-         chat input appeared floating in mid-screen on iPhone. With this
-         flag the layout viewport shrinks, so absolute-bottom elements get
-         pushed up naturally to sit just above the keyboard. Safari 16.4+
-         and modern Chrome honor it; older browsers safely ignore the
-         parameter (no behaviour regression). -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>heart-vessel-v2</title>
   </head>
   <body>

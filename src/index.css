@@ -102,25 +102,7 @@ html, body {
   font-family: var(--font);
 }
 
-/* ─── #root — the app's "phone" canvas ────────────────────────────
-   The whole app is laid out for a fixed 393×852 iPhone canvas (every
-   screen uses absolute pixel offsets against that design size). Rather
-   than retrofit responsive rules into every screen's CSS, we keep the
-   canvas at its native 393×852 and SCALE the whole element with a CSS
-   transform. The layout math never changes; only the on-screen size
-   does. This matches how the app was designed in Figma — so the
-   deployed build always looks identical to the mockups, just zoomed to
-   fit whichever device is looking.
-
-   --scale comes from min(w-ratio, h-ratio):
-     • If the viewport is narrower than tall (almost every phone): the
-       width ratio wins, height leaves some empty vertical space.
-     • If shorter than wide (landscape / desktop with short window):
-       the height ratio wins, width leaves horizontal bars.
-   Either way the canvas stays proportional and never clips — which
-   fixes the mobile bug where the hearts-orbit layer rode up into the
-   "This is your Heart Vessel" heading on 100dvh-height iPhones.
-   -------------------------------------------------------------- */
+/* iPhone 17 Pro: 393 × 852 */
 #root {
   width: 393px;
   height: 852px;
@@ -132,40 +114,21 @@ html, body {
   flex-shrink: 0;
 }
 
-/* Viewports smaller than the canvas (every phone + most laptops) — scale
-   to fit proportionally. `100dvh` is the dynamic viewport height that
-   accounts for the iOS Safari URL bar showing/hiding, so the scale
-   factor stays correct as the bar animates.
-   Division by a length (393px / 852px) produces a unitless number for
-   scale(), supported in all modern browsers (Safari 16.4+, Chrome 104+,
-   Firefox 116+). If an older browser ignores it, it falls back to the
-   unscaled 393×852 root, which will show scrollbars but still function. */
-@media (max-width: 433px), (max-height: 900px) {
-  html, body {
-    background: #000;
-    /* Turn off the flex centering used on desktop. Flex can't center an
-       852px-tall child inside a <900px viewport, so the child would clip
-       and transform origin would land in the wrong spot. Absolute
-       positioning + translateX gives us a predictable anchor to scale
-       from. */
-    display: block;
-  }
+/* 뷰포트가 좁으면 화면에 맞게 축소 */
+@media (max-width: 433px) {
   #root {
+    width: 100vw;
+    height: calc(100vw * 852 / 393);
+    max-height: 100dvh;
     border-radius: 0;
-    box-shadow: none;
-    position: absolute;
-    top: 0;
-    left: 50%;
-    /* translateX(-50%) centers horizontally at pre-scale size; scale()
-       then shrinks around the top-center origin so the canvas stays
-       pinned to the viewport top and centers left/right as it shrinks.
-       The scale factor is the SAME in both axes (we pick the smaller
-       of w-ratio and h-ratio), so the 393:852 aspect never distorts.
-       Division by `px` lengths is what produces a unitless value for
-       scale(), per CSS Values Level 4. */
-    transform-origin: top center;
-    transform: translateX(-50%)
-               scale(min(calc(100vw / 393px), calc(100dvh / 852px)));
+  }
+}
+
+/* 뷰포트가 낮으면 높이 기준으로 축소 */
+@media (max-height: 872px) and (min-width: 433px) {
+  #root {
+    height: 100dvh;
+    width: calc(100dvh * 393 / 852);
   }
 }
 
