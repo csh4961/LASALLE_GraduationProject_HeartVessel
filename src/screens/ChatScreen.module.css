@@ -6468,18 +6468,30 @@
 /* ────────────────────────────────────────────────────────────
    Mobile PWA re-anchoring — flat 30pt top / 20pt bottom
    ────────────────────────────────────────────────────────────
-   Matches the rule the rest of the app uses on mobile:
-     - top chrome (back button + person label) at top: 30
-     - bottom rails (chat trigger round button, slide chat bar,
-       archive reply chat bar) at bottom: 20 so they hug the
-       home-indicator gesture strip like the global nav pill.
-     - messages area padding shrinks in lockstep (-30 top,
-       -30 bottom) so the messages block translates up with
-       the chrome. Without this the chrome moved but the
-       message column stayed anchored at padding-top:122 /
-       padding-bottom:180, opening a visible empty band.
-   Desktop keeps the design-canvas 60pt top and the safe-area-
-   based bottom because there's no home indicator to hug.
+   Chrome + EVERY scroll/overlay container that references the
+   chrome's y-coordinates has to move together, or the chrome
+   ends up orbiting disconnected buttons (user: "버튼은 하나는
+   날라다니고"). Anchors on mobile:
+
+     - .backBtn, .personLabel    →  top: 30     (chrome)
+     - .chatTriggerBtn, .slideChatBar,
+       .archiveChatBar           →  bottom: 20  (bottom chrome)
+
+   Containers the chrome reserves space for:
+
+     - .messagesArea             top:92 / bot:150   (was 122/180)
+     - .heroScroll               top:92 / bot:106   (was 120/126+safe)
+     - .heroScrollArchiveReplay  bot:158            (was 168+safe)
+     - .bottomArea               pad-bot: 20        (was 30+safe)
+         ^ THIS is the Analyse/CTA rail. Previously at
+           calc(30+safe-area-bottom) ≈ 64pt on iPhone 13, while
+           the standalone .chatTriggerBtn sat at bottom:20 — the
+           Analyse pill visibly floated 44pt above the chat
+           circle. Dropping pad-bottom to 20 aligns them.
+
+   Desktop rules are untouched — this block only fires on narrow
+   viewports (≤433px) which corresponds to any installed PWA on
+   current iPhone hardware.
    ──────────────────────────────────────────────────────────── */
 @media (max-width: 433px) {
   .backBtn,
@@ -6493,5 +6505,14 @@
   }
   .messagesArea {
     padding: 92px 25px 150px;
+  }
+  .heroScroll {
+    padding: 92px 25px 106px;
+  }
+  .heroScrollArchiveReplay {
+    padding-bottom: 158px;
+  }
+  .bottomArea {
+    padding-bottom: 20px;
   }
 }
