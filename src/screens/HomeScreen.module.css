@@ -137,6 +137,73 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* ────────────────────────────────────────────────────────────
+   Mobile-only layout re-anchoring (≤ 433px viewport)
+   ────────────────────────────────────────────────────────────
+   Desktop keeps the original Figma-literal coordinates (top:60
+   for chrome, top:229/409/466 for character+taglines, bottom:
+   calc(30+safe-area) for the nav bar). On an installed-PWA
+   mobile (viewport-fit=cover + black-translucent status bar),
+   those same coords visually floated mid-canvas because:
+     - the physical viewport is 100dvh tall (INCLUDES notch
+       area), not the 852pt design-safe-area,
+     - the profile's `top: 60` is measured from the physical top
+       edge, so it sits well below the notch (~13pt gap)
+       instead of hugging safe-area-top,
+     - the nav's `bottom: calc(30 + safe-area-bottom)` leaves a
+       large 30pt buffer above the home indicator,
+     - the center bundle (char+tag+subtag) anchors to design
+       canvas y, so on viewports taller than 852 it skews
+       below viewport centre.
+   Fix per element:
+     - top chrome (profile / greeting / alarm): anchor to
+       env(safe-area-inset-top) + small buffer so they hug
+       whichever notch/island the device has.
+     - bottom nav / chat: tighter 14pt buffer above safe area.
+     - char / tagline / subtagline: anchor to viewport vertical
+       centre (50%) with offsets that reproduce the designed
+       intra-bundle spacing. Keeps the bundle visually centred
+       on any iPhone model.
+   ──────────────────────────────────────────────────────────── */
+@media (max-width: 433px) {
+  .profileBtn,
+  .greeting,
+  .alarmBtn {
+    /* was: top: 60px (design-canvas absolute).
+       now: safe-area-inset-top + 10 = tight air-gap below notch. */
+    top: calc(env(safe-area-inset-top, 0px) + 10px);
+  }
+
+  .navBar,
+  .chatBtn {
+    /* was: calc(30px + safe-area-bottom) — 30pt cushion above
+       home indicator. now: 14pt so nav visibly hugs the bottom
+       gesture bar. */
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 14px);
+  }
+
+  /* Character re-centres vertically on viewport, not canvas.
+     charImg is 437px tall; the original design placed its
+     centre 21pt below canvas-centre (y≈447 in 852 canvas).
+     Offset math: top = 50vh - (437/2 - 21) = 50% - 197.5px. */
+  .charImg {
+    top: calc(50% - 197.5px);
+  }
+  /* Tagline baseline sits ~14pt above its own bounding-box
+     centre; in design it was 17pt above canvas-centre. */
+  .tagline {
+    top: calc(50% - 17px);
+  }
+  /* Sub-tagline was 40pt below canvas-centre. */
+  .subTagline {
+    top: calc(50% + 40px);
+  }
+
+  /* Keep the float-cycle transform for charImg aligned with
+     the new top anchor — the keyframe above references the
+     same translateX(-50%), only the Y baseline changed. */
+}
+
 /* ── Italic spans (PP Editorial New italic) ────────────────── */
 .italic {
   font-family: 'PP Editorial New', 'PT Serif', serif;
