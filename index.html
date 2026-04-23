@@ -3,8 +3,44 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>heart-vessel-v2</title>
+
+    <!-- viewport-fit=cover lets CSS env(safe-area-inset-*) return real
+         notch / home-indicator padding when the app is launched from
+         the home screen in PWA standalone mode. Without it, iOS zeroes
+         those values out and our --sat / --sab vars in index.css
+         collapse, which would push content under the notch on iPhone
+         X+ devices. The viewport itself is unchanged in regular
+         browser tabs. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+    <!-- ═══ PWA (Progressive Web App) wiring ════════════════════════
+         Two parallel sets of tags because iOS Safari and Android
+         Chrome disagree on how an installable web app is declared:
+           • Android / Chromium reads <link rel="manifest">, then
+             pulls name / icons / display / colors from the JSON.
+           • iOS Safari mostly ignores manifest.json and reads these
+             Apple-specific <meta> and <link> tags directly. So both
+             sets must be present and consistent.
+
+         When a user taps Share → "Add to Home Screen" on iPhone:
+           - apple-touch-icon.png is what lands on the home screen
+           - apple-mobile-web-app-capable=yes hides Safari chrome
+             when the icon is tapped (full-screen "app" feel)
+           - apple-mobile-web-app-status-bar-style controls the
+             status bar over our background (default = dark text on
+             light bg, which matches our #FEF0EC canvas)
+           - apple-mobile-web-app-title is the label shown UNDER the
+             icon on the home screen (shorter than the page <title>)
+         ════════════════════════════════════════════════════════════ -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#FEF0EC" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Heart Vessel" />
+    <meta name="mobile-web-app-capable" content="yes" />
+
+    <title>Heart Vessel</title>
   </head>
   <body>
     <div id="root"></div>
