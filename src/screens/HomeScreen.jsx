@@ -32,8 +32,8 @@ export default function HomeScreen() {
 
       {/* ── Greeting text — vertically aligned with profile btn ── */}
       <div className={styles.greeting}>
-        <p className={styles.greetName}>Hi, Suho.</p>
-        <p className={styles.greetSub}>Son | Cho Family</p>
+        <p className={styles.greetName}>Hi, there.</p>
+        <p className={styles.greetSub}>Your words are waiting.</p>
       </div>
 
       {/* ── Alarm button (333,60) 44×44 ── */}

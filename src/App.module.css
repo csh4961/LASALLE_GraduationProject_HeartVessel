@@ -531,6 +531,7 @@
    ──────────────────────────────────────────────────────────── */
 @media (max-width: 433px) {
   .navBar,
+  .chatBar,
   .chatBtn {
     bottom: 20px;
   }
