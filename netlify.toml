@@ -1,0 +1,48 @@
+# ============================================================
+# netlify.toml — Netlify build + routing config.
+#
+# [build]
+#   command/publish tell Netlify how to produce the static site
+#   bundle from the Vite project. `functions` tells it where
+#   our Serverless Function source lives so it gets packaged
+#   and deployed alongside the site.
+#
+# First [[redirects]] block:
+#   The frontend in src/utils/claude.js POSTs to `/api/claude`
+#   (a path we originally chose for the Vercel deployment).
+#   On Netlify, Serverless Functions live under
+#   `/.netlify/functions/<name>`. This rewrite lets the client
+#   keep the nicer `/api/claude` URL while the request actually
+#   hits netlify/functions/claude.js.
+#
+#   status = 200 (not 301/302) → internal rewrite, not a client-
+#   visible redirect, so the browser URL stays `/api/claude`
+#   and there's no extra round-trip. `force = true` beats any
+#   conflicting file that might ship in dist/api/ (there is
+#   none today, but it's a safe default).
+#
+# Second [[redirects]] block:
+#   SPA fallback. The app is a single-page React build — any
+#   deep path (e.g. someone hitting /onboarding directly) must
+#   serve index.html so the client router takes over. Without
+#   this, Netlify 404s on anything that isn't a real file in
+#   dist/. The `/api/*` rule above runs FIRST (rewrites are
+#   evaluated top-to-bottom), so function calls aren't caught
+#   by the SPA catch-all.
+# ============================================================
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+  functions = "netlify/functions"
+
+[[redirects]]
+  from = "/api/claude"
+  to = "/.netlify/functions/claude"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
