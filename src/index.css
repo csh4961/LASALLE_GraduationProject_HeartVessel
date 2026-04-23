@@ -95,14 +95,16 @@ html, body {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  /* Pure black so the PWA canvas (and any area visible outside the
-     fixed 393x852 root — e.g. the strip under the notch when the
-     canvas is shorter than the device, or the left/right bands on
-     ultrawide desktops) blends into the HomeScreen's black bg and
-     into the translucent status-bar area. Previously #E8CFC9 pink,
-     which produced a visible coloured frame around the canvas in
-     installed-PWA mode. */
-  background: #000000;
+  /* Desktop: dark-but-not-black so the 393×852 canvas (which itself
+     paints pure black on HomeScreen) reads as a distinct rounded
+     phone frame floating in front of the page, rather than bleeding
+     edgelessly into a matching black page. The canvas's box-shadow
+     (see #root) also only becomes visible against a non-black bg.
+     Mobile PWA overrides this to pure #000000 (see media query
+     below) because there the canvas is 100dvh and the only place
+     html/body shows through is the translucent status-bar area —
+     which needs to match the canvas's own black, not a gray. */
+  background: #1a1a1a;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -148,6 +150,14 @@ html, body {
    width (≤ 430pt on even the widest current iPhones).
    -------------------------------------------------------- */
 @media (max-width: 433px) {
+  /* Mobile PWA: revert html/body to pure black. The canvas fills
+     100dvh edge-to-edge, so the only html/body pixels visible are
+     those peeking through the translucent status-bar / home-indicator
+     strip, and those must match the canvas's own black to avoid a
+     grey band above the notch. */
+  html, body {
+    background: #000000;
+  }
   #root {
     width: 100vw;
     height: 100dvh;
