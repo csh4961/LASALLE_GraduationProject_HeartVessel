@@ -1,0 +1,486 @@
+/* ============================================================
+   OnboardingScreen — Liquid-Glass pass
+
+   Per user ("이모지 넣지 말고 깔끔하게 텍스트만 넣어 … 폰트 저거
+   그 내가 지정한 그 폰트 맞나? … 여기도 liquid glass 스타일
+   적용"):
+
+     - The emoji faces above each relation card are removed.
+       Cards now render label-only typography on a translucent
+       glass surface.
+     - All typography stays on PP Neue Montreal (with Inter only
+       as a fallback in case the OTF fails to load). PP Editorial
+       New is used for the subtle italic affordances that match
+       the rest of the app's editorial voice.
+     - Every surface (picker cards, MBTI grid, chip row, input
+       area, send button, bot/user bubbles) is rebuilt on the
+       shared glass recipe used in ArchiveScreen / FamilyScreen:
+         · translucent dark-neutral core
+         · url(#liquidGlass) SVG refraction + blur + saturate
+         · thin specular rim via ::before
+         · subtle outer drop-shadow
+   ============================================================ */
+.screen {
+  width: 100%;
+  height: 100%;
+  background: #000000;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── Top bar ─────────────────────────────────────────────── */
+.topBar {
+  flex-shrink: 0;
+  padding: 60px 25px 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: 104px;
+  box-sizing: border-box;
+  position: relative;
+}
+
+/* Back-button POSITIONING ONLY — visuals live in shared <BackButton>. */
+.backBtn {
+  flex-shrink: 0;
+}
+
+/* Progress dots */
+.progress {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+.dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  transition: all 0.3s ease;
+}
+.dotActive {
+  background: rgba(255, 255, 255, 0.75);
+  width: 16px;
+  border-radius: 3px;
+}
+
+/* ── Relation picker ─────────────────────────────────────── */
+.pickHeader {
+  flex-shrink: 0;
+  padding: 4px 25px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.pickTitle {
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+  font-size: 22px;
+  font-weight: 500;
+  color: #FFFFFF;
+  line-height: 1.3;
+  letter-spacing: -0.1px;
+}
+.pickSub {
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+  font-size: 13.5px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.45);
+  line-height: 1.4;
+}
+
+.pickScroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 25px calc(30px + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  scrollbar-width: none;
+}
+.pickScroll::-webkit-scrollbar { display: none; }
+
+.pickGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.pickGroupLabel {
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+  font-size: 10.5px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.3);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.pickGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+/* Liquid-glass relation card. Centered label only, no emoji row.
+   Same recipe as the people-list card in FamilyScreen so selecting
+   a relation feels like touching the same material it'll live in
+   afterwards. */
+.pickCard {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 56px;
+  padding: 14px 10px;
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+
+  background: rgba(255, 255, 255, 0.045);
+  backdrop-filter: url(#liquidGlass) blur(18px) saturate(1.35);
+  -webkit-backdrop-filter: blur(18px) saturate(1.35);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 2px 10px rgba(0, 0, 0, 0.18);
+
+  transition: background 0.18s ease, border-color 0.18s ease, transform 0.15s ease;
+}
+.pickCard::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(
+    120% 85% at 18% -10%,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.035) 36%,
+    rgba(255, 255, 255, 0) 62%
+  );
+  z-index: 0;
+}
+.pickCard > * { position: relative; z-index: 1; }
+.pickCard:active {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.22);
+  transform: scale(0.97);
+}
+
+.pickLabel {
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  text-align: center;
+  line-height: 1.3;
+  letter-spacing: 0.1px;
+  white-space: nowrap;
+}
+
+/* ── Messages area ─────────────────────────────────────── */
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 25px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.messages::-webkit-scrollbar { display: none; }
+
+/* Bubble base — glass container for both bot + user. Each variant
+   just swaps tint, so bot reads quieter and user reads brighter. */
+.bubble {
+  position: relative;
+  max-width: 85%;
+  padding: 14px 18px;
+  border-radius: 22px;
+  line-height: 1.55;
+  overflow: hidden;
+}
+.bubble::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(
+    120% 85% at 18% -10%,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.035) 36%,
+    rgba(255, 255, 255, 0) 62%
+  );
+  z-index: 0;
+}
+.bubble > * { position: relative; z-index: 1; }
+
+/* Bot bubble — quiet translucent glass */
+.bot {
+  align-self: flex-start;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: url(#liquidGlass) blur(18px) saturate(1.35);
+  -webkit-backdrop-filter: blur(18px) saturate(1.35);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 2px 10px rgba(0, 0, 0, 0.18);
+  border-bottom-left-radius: 5px;
+}
+.bot p {
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.92);
+  margin: 0;
+  line-height: 1.6;
+}
+
+.hint {
+  font-family: 'PP Editorial New', 'Georgia', serif;
+  font-size: 12px !important;
+  color: rgba(255, 255, 255, 0.38) !important;
+  margin-top: 5px !important;
+  margin-bottom: 0 !important;
+  font-style: italic;
+}
+
+/* User bubble — slightly brighter glass so the "my voice" side
+   reads as the foreground layer without the old solid fill. */
+.user {
+  align-self: flex-end;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: url(#liquidGlass) blur(18px) saturate(1.35);
+  -webkit-backdrop-filter: blur(18px) saturate(1.35);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 2px 10px rgba(0, 0, 0, 0.22);
+  border-bottom-right-radius: 5px;
+}
+.user p {
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  color: #FFFFFF;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ── Input wrap (chips + input) ─────────────────────────── */
+.inputWrap {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-bottom: calc(30px + env(safe-area-inset-bottom, 0px));
+}
+
+/* Chip row — horizontal scrolling suggestions. */
+.chipsRow {
+  display: flex;
+  gap: 8px;
+  padding: 0 25px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.chipsRow::-webkit-scrollbar { display: none; }
+
+.chip {
+  position: relative;
+  flex-shrink: 0;
+  padding: 8px 15px;
+  border-radius: 20px;
+  overflow: hidden;
+
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: url(#liquidGlass) blur(14px) saturate(1.3);
+  -webkit-backdrop-filter: blur(14px) saturate(1.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s ease, border-color 0.15s ease,
+              color 0.15s ease, transform 0.15s ease;
+}
+.chip:active {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.26);
+  color: #fff;
+  transform: scale(0.97);
+}
+
+/* ── MBTI 4×4 grid ─────────────────────────────────────── */
+.mbtiSection {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0 25px;
+}
+
+.mbtiGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.mbtiChip {
+  position: relative;
+  height: 44px;
+  border-radius: 14px;
+  overflow: hidden;
+
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: url(#liquidGlass) blur(14px) saturate(1.3);
+  -webkit-backdrop-filter: blur(14px) saturate(1.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  color: rgba(255, 255, 255, 0.82);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease, border-color 0.15s ease,
+              color 0.15s ease, transform 0.15s ease;
+}
+.mbtiChip:active {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.26);
+  color: #fff;
+  transform: scale(0.97);
+}
+
+/* Quiet secondary action — "Don't know" slot. Stays subdued
+   against the glass chips so it reads as an opt-out, not a peer. */
+.dontKnowBtn {
+  width: 100%;
+  height: 42px;
+  border-radius: 14px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.dontKnowBtn:active {
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.65);
+}
+
+/* ── Input area — full liquid-glass composer ───────────────
+   Matches the .slideChatBar recipe from ChatScreen so the
+   onboarding input feels like part of the same chat family. */
+.inputArea {
+  position: relative;
+  flex-shrink: 0;
+  margin: 0 25px;
+  border-radius: 34px;
+  overflow: hidden;
+
+  background: rgba(22, 24, 28, 0.62);
+  backdrop-filter: url(#liquidGlass) blur(24px) saturate(1.5) brightness(1.02);
+  -webkit-backdrop-filter: blur(24px) saturate(1.5) brightness(1.02);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.22),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.38),
+    inset 0 0 24px rgba(255, 255, 255, 0.04),
+    0 14px 40px rgba(0, 0, 0, 0.45);
+
+  display: flex;
+  align-items: flex-end;
+  padding: 12px 12px 12px 18px;
+  gap: 8px;
+  box-sizing: border-box;
+}
+.inputArea::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(
+    120% 85% at 18% -10%,
+    rgba(255, 255, 255, 0.22) 0%,
+    rgba(255, 255, 255, 0.08) 36%,
+    rgba(255, 255, 255, 0) 62%
+  );
+  z-index: 0;
+}
+.inputArea > * { position: relative; z-index: 1; }
+
+.input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  resize: none;
+  color: #ffffff;
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.6;
+  caret-color: #fff;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  box-sizing: border-box;
+  min-height: 28px;
+  max-height: 120px;
+  overflow: hidden;
+  align-self: center;
+}
+.input::placeholder {
+  color: rgba(255, 255, 255, 0.32);
+}
+
+/* Send button — glass puck, mirrors archiveChatSend/chatTriggerBtn. */
+.sendBtn {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  padding: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  cursor: pointer;
+
+  background: rgba(255, 255, 255, 0.14);
+  backdrop-filter: url(#liquidGlass) blur(18px) saturate(1.45);
+  -webkit-backdrop-filter: blur(18px) saturate(1.45);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 2px 8px rgba(0, 0, 0, 0.3);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.15s ease, background 0.15s ease, transform 0.15s ease;
+}
+.sendBtn:hover { background: rgba(255, 255, 255, 0.2); }
+.sendBtn:active { transform: scale(0.94); opacity: 0.85; }
+.sendBtn:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+.sendBtn svg {
+  display: block;
+  position: relative;
+  z-index: 1;
+}

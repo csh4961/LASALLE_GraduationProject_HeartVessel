@@ -1,0 +1,461 @@
+/* ============================================================
+   VesselScreen — Orbit + Expanded Detail layers
+   ============================================================ */
+.screen {
+  width: 100%;
+  height: 100%;
+  /* background is on .phone (App.module.css) so the SharedCharacter living
+     between .phone and .screenWrap can paint through this transparent layer. */
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ── Back button — POSITIONING ONLY. The 44×44 glass circle +
+   drawn chevron + active feedback live inside the shared
+   <BackButton> component (src/components/BackButton.module.css). */
+.backBtn {
+  position: absolute;
+  left: 25px;
+  top: 60px;
+  z-index: 40;
+}
+
+/* ── Fade animation (tagline) ────────────────────────────── */
+/* fadeIn carries a delay so the taglines materialize AFTER the hearts
+   have mostly completed their morph back into orbit, rather than popping
+   in while the hearts are still mid-flight. fadeOut stays snappy so the
+   text exits quickly when the user expands a heart. */
+.fadeIn {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.5s ease 0.28s, transform 0.5s ease 0.28s;
+}
+.fadeOut {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* ── Top tagline ─────────────────────────────────────────── */
+.topText {
+  position: absolute;
+  top: 150px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  z-index: 2;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  pointer-events: none;
+}
+.topLine {
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+  font-size: 20px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.78);
+  margin: 0;
+  line-height: 30px;
+}
+.em {
+  font-family: 'PP Editorial New', 'Georgia', serif;
+  font-style: italic;
+  font-weight: 400;
+  color: #FFFFFF;
+}
+
+/* ── Bottom tagline ──────────────────────────────────────── */
+.bottomText {
+  position: absolute;
+  bottom: 160px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  z-index: 2;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  pointer-events: none;
+}
+.bottomLine1 {
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+  font-size: 20px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.78);
+  margin: 0;
+  line-height: 30px;
+}
+.bottomLine2 {
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+  font-size: 26px;
+  font-weight: 400;
+  color: #FFFFFF;
+  margin: 0;
+  line-height: 34px;
+}
+
+/* ── Orbit container — fades out when expanded ──────────────
+   Mount-in reveal is now handled PER HEART (staggered, in VesselScreen.jsx)
+   so the wrapper itself stays at opacity 1 and only transitions for the
+   expand flow: when the user taps a heart, `.orbitHidden` fades the whole
+   layer out so the expanded detail composition has clean focus. */
+.orbitWrap {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 0;
+  height: 0;
+  z-index: 5;
+  opacity: 1;
+  transition: opacity 0.4s ease 0.04s;
+}
+.orbitWrap.orbitHidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Rotating orbit wrapper */
+.heartsOrbit {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  animation: orbitSpin 90s linear infinite;
+}
+.heartsOrbit.paused {
+  animation-play-state: paused;
+}
+
+@keyframes orbitSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ── Central character ───────────────────────────────────── */
+/* Gentle float + breath animation — ~5px vertical travel + 1.5% scale
+   oscillation over 5s. Subtle enough to register as "alive" in peripheral
+   vision without pulling attention from the orbit. Keyframes include the
+   centering translate so they don't fight with the base transform. */
+@keyframes centerFloat {
+  0% {
+    transform: translate(-50%, calc(-50% - 2px)) scale(1);
+  }
+  50% {
+    transform: translate(-50%, calc(-50% + 3px)) scale(1.015);
+  }
+  100% {
+    transform: translate(-50%, calc(-50% - 2px)) scale(1);
+  }
+}
+
+.centerCharacter {
+  position: absolute;
+  width: 144px;
+  height: 144px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 6;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+  animation: centerFloat 5s ease-in-out infinite;
+}
+.centerCharacter.centerHidden {
+  opacity: 0;
+}
+.centerCharacter img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+/* ── Heart button (orbit item) ───────────────────────────── */
+.heartBtn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 101px;
+  height: 101px;
+  margin-left: -50px;
+  margin-top: -50px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 5;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+              filter 0.2s ease;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.heartBtnPressed {
+  filter: brightness(1.15) drop-shadow(0 0 20px rgba(255, 130, 140, 0.5));
+}
+
+.heartInner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.heartImg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  pointer-events: none;
+  /* Visual-only 10% shrink — the swapped PNG reads slightly larger due to
+     its intrinsic bleed. We keep the 101px button (click target) and
+     container box exactly as they were, and only the bitmap contracts
+     around its own center. Mirrors the HEART_VISUAL_SCALE = 0.9 factor
+     applied to expanded-layer hearts via their imperative transform. */
+  transform: scale(0.936);
+  transform-origin: center;
+}
+
+.heartLabel {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, calc(-50% - 5px));
+  font-family: 'PP Editorial New', 'Georgia', serif;
+  font-style: italic;
+  font-size: 14px;
+  font-weight: 400;
+  color: #FFFFFF;
+  white-space: nowrap;
+  text-align: center;
+  pointer-events: none;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  line-height: 1.25;
+  /* Labels have their own opacity transition so they can fade in gradually
+     after the expanded layer hands off to the orbit layer. The heart image
+     itself remains snappy (no transition on the button) so the morph-back
+     pixel-matches the orbit hearts — but the labels, which don't exist in
+     the expanded layer, gently materialize rather than popping in. */
+  transition: opacity 0.45s ease;
+}
+
+/* ============================================================
+   EXPANDED LAYER — fixed-layout detail view
+   ============================================================ */
+/* The layer stays fully visible the entire time it is mounted. Visual
+   continuity between orbit and detail is driven by the shared-element
+   morph on the hearts themselves (imperative transform transitions),
+   not by a layer-wide opacity fade. The old opacity 1↔0 transition
+   made the layer disappear (over 350ms) while hearts were still morphing
+   back to orbit (620ms) on collapse, causing a visible "gap" before the
+   orbit hearts re-appeared at 700ms. With the fade removed, hearts shrink
+   smoothly into orbit and the handoff to the orbit layer is seamless.
+   Text fades separately via .detailContent's own opacity transition. */
+.expandedLayer {
+  position: absolute;
+  inset: 0;
+  z-index: 15;
+  pointer-events: none;
+}
+.expandedLayer.expandedVisible {
+  pointer-events: auto;
+}
+
+/* ── Heart slot (unified) ────────────────────────────────── */
+/* Every family member has ONE heart rendered in the expanded layer, sized at
+   canonical main size (600px). Transforms imperatively scale the non-main
+   slots down to peek size. At any time 3 hearts are in visible slots (upper
+   peek, main, lower peek); the others are stacked offscreen above/below at
+   opacity 0. Default transform = scale(0) at center so the element is hidden
+   until the morph layout effect kicks in and positions it. */
+.heartSlot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 600px;
+  height: 600px;
+  object-fit: contain;
+  display: block;
+  filter: saturate(0.9);
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0);
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+
+/* ── Detail content on the main heart ────────────────────── */
+/* Fades in after the main heart has finished growing into place.
+   A SIBLING of .mainHeartWrap (not a child) so it stays upright
+   regardless of the heart's -90° end rotation. */
+.detailContent {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  /* +55px X shift — nudge the whole text block right of the heart's center
+     so it sits visually centered on the heart's upper lobe (the heart is
+     rotated -90°, so the "top" of the heart points to the right). */
+  transform: translate(calc(-50% + 55px), calc(-50% - 8px));
+  width: 220px; /* 200 → 190 → 220 (widened by 30px per request) */
+  color: #FFFFFF;
+  text-align: left;
+  opacity: 0;
+  pointer-events: auto;
+  transition: opacity 0.3s ease;
+  z-index: 11;
+}
+/* Initial expand reveal — tuned to land close to when the heart morph
+   completes (620ms) rather than drifting behind it. 0.32s delay starts
+   the fade at ~52% of the morph, and the 0.36s duration finishes just
+   after the heart settles. Reads as "text catches the heart at arrival"
+   instead of "text lags the heart." Kept in sync with the post-swipe
+   re-fade tempo below so both reveals feel cut from the same fabric. */
+.expandedVisible .detailContent {
+  opacity: 1;
+  transition: opacity 0.36s ease 0.32s;
+}
+
+/* Card index counter — "01 / 04" above the name, right-aligned within the
+   220px content block so it sits in the corner like a page indicator rather
+   than on the same reading line as the italic name. Small uppercase
+   tracking + dimmed white keeps it as metadata, letting the name remain the
+   editorial anchor. Gated on totalEntries > 0 so an empty state never
+   renders "00 / 00". */
+.detailIndex {
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 11px;
+  line-height: 14px;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.7);
+  /* inline-block so the element hugs its text instead of stretching across
+     the full 220px block — the stroke badge then wraps only "01 / 04". */
+  display: inline-block;
+  padding: 2px 7px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 6px;
+  background: transparent;
+  /* Layout margin keeps siblings (name, message, meta) exactly where they
+     were — only margin-left nudges the block horizontally. Vertical lift is
+     done via transform so it's purely visual and doesn't pull .detailName
+     up with it. */
+  margin: 0 0 6px 0;
+  transform: translateY(-10px);
+  text-align: left;
+  font-variant-numeric: tabular-nums;
+  user-select: none;
+}
+.detailIndexSep {
+  opacity: 0.6;
+}
+
+.detailName {
+  font-family: 'PP Editorial New', 'Georgia', serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: 22px;
+  line-height: 30px;
+  margin: 0 0 10px 0;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+/* Ornament mark placed AFTER (right of) the recipient's name. Reads like a
+   trailing signature flourish. Sized smaller than the name glyphs so it
+   supports the word rather than competing with it. */
+.detailNameIcon {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  flex-shrink: 0;
+  user-select: none;
+  pointer-events: none;
+  transform: translateY(-1px);
+}
+
+.detailMessage {
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 22px;
+  color: #FFFFFF;
+  /* Message + meta share one content block between two dividers. Generous
+     gap so the meta clearly separates from the message body and reads as
+     the entry's "signature" line. */
+  margin: 0 0 30px 0;
+  white-space: pre-wrap;
+  /* Summary view — clamp to 3 lines with ellipsis. The full text lives on
+     the drill-down letter page; this card is a preview. */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.detailDivider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.55);
+  margin: 10px 0 10px 0;
+  width: 220px;
+}
+
+/* Meta row — date (left) + "held N days" (right). Both read as data points,
+   so both use sans-serif regular matching the message body. Italic serif is
+   reserved for editorial elements (the recipient's name), keeping its
+   rarity — and therefore its weight — intact. */
+.detailMeta {
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 18px;
+  color: #FFFFFF;
+  margin: 0;
+  /* Date on the left, "held N days" pushed to the right edge of the
+     content block — space-between gives clean opposing alignment. */
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+
+/* ── Drill-down CTA ──────────────────────────────────────── */
+/* Functional button → sans-serif regular, so it reads clearly as an action
+   rather than as editorial prose. A divider above does the visual separation
+   from the meta row. touch-action: manipulation lets the click fire cleanly
+   even though the expanded layer itself sets touch-action: none for swipe
+   capture. */
+.detailCta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  margin: 4px 0 0 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 18px;
+  color: rgba(255, 255, 255, 0.85);
+  transition: color 0.15s ease;
+}
+.detailCta:hover { color: #FFFFFF; }
+.detailCta:active { color: #FFFFFF; }
+.detailCta:active .detailCtaArrow { transform: translateX(3px); }
+
+.detailCtaArrow {
+  display: inline-block;
+  font-style: normal;
+  transform: translateX(0);
+  transition: transform 0.2s ease;
+}

@@ -1,0 +1,516 @@
+.phone {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  /* Phone-level black so Home/Vessel screens can be transparent — lets the
+     SharedCharacter (which sits BETWEEN .phone and .screenWrap in tree order)
+     show through instead of getting buried under each screen's own bg. */
+  background: #000000;
+}
+
+.screenWrap {
+  position: absolute;
+  inset: 0;
+}
+
+/* ── Shared character (Home ↔ Vessel morph) ─────────────────────
+   One persistent element whose class flips between sharedCharHome and
+   sharedCharVessel on navigation. Transition on `top` + `transform: scale()`
+   runs the whole morph — the character doesn't re-mount, so the browser can
+   interpolate smoothly. Transform-origin is the element's own centre
+   (browser default 50% 50%), so scaling keeps the visual centre pinned at
+   `top + 218.5px` (half of 437). Home -> Vessel = shrink in place; text
+   around it (Home taglines / Vessel orbit + taglines) swaps in from each
+   screen's own DOM without fighting the character.
+   ------------------------------------------------------------ */
+.sharedChar {
+  position: absolute;
+  left: 50%;
+  width: 435px;
+  height: 437px;
+  pointer-events: none;
+  z-index: 0;                 /* sits under screen content so taglines paint on top */
+  /* 1.0s = a deliberate, unhurried morph. At this duration the motion reads
+     as "one breath" rather than a quick UI state change — the character
+     almost decants from one size to the other while the rest of the screen
+     materialises around it. Soft-out easing (expo-like) decelerates into
+     the destination so the arrival is felt, not cut. Opacity is longer
+     too (0.4s) so fade-in/out on sibling screens feels equally unhurried. */
+  transition:
+    top 1.0s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 1.0s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.4s ease;
+  will-change: transform, top, opacity;
+}
+.sharedCharHome {
+  top: 229px;
+  transform: translateX(-50%) scale(1);
+}
+/* 144/435 ≈ 0.3310. Vessel main character image was 144×144; we keep that
+   silhouette by scaling the 435×437 source. Vertical centre = phone 50%,
+   so `top = 50% - 437/2 = 50% - 218.5px`. Scale is applied around the
+   element's centre, preserving that anchor exactly. */
+.sharedCharVessel {
+  top: calc(50% - 218.5px);
+  transform: translateX(-50%) scale(0.331);
+}
+.sharedCharHidden {
+  opacity: 0;
+}
+
+/* Inner <img> carries the gentle idle float. Keeping the animation on a
+   separate element from the morph-transition parent lets them compose
+   instead of fighting each other — parent handles scale/position
+   transition, child handles the continuous vertical bob. */
+.sharedCharImg {
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  display: block;
+  animation: sharedCharFloat 6s ease-in-out infinite;
+}
+@keyframes sharedCharFloat {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+
+/* ── Global Navigation Bar ─────────────────────────────────────
+   Per user ("배경 이미지 말고 너가 직접 반투명한 liquid-glass 모양
+   만들어줘, 유리처럼 왜곡도 들어가게"): the legacy NavigationBar.png
+   backing plate has been retired. The bar is now a fully CSS-drawn
+   liquid-glass pill — translucent dark base + backdrop-filter frost
+   for the blur/saturation pickup, layered specular highlights via
+   ::before / ::after pseudo-elements to sell the curvature, and a
+   white-ink rim + dark bottom shade to fake the edge refraction you
+   see in Apple's material. Same dimensions (265×66) and position as
+   before so the pill stays aligned to the chat button's leftward
+   rail.                                                        */
+.navBar {
+  position: absolute;
+  left: 25px;
+  bottom: calc(30px + env(safe-area-inset-bottom, 0px));
+  width: 265px;
+  height: 66px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  z-index: 100;
+  border-radius: 33px;
+  /* Dark translucent tint — close to the colour the old PNG landed
+     on so the bar doesn't visibly shift hue, just material. 0.38
+     alpha is the sweet spot: enough to ground the icons against a
+     bright background (archive's orange ellipses, home's pink),
+     still translucent enough that you see content breathing behind. */
+  background: rgba(30, 30, 34, 0.38);
+  /* The star ingredient. blur 26px frosts whatever sits behind so
+     the bar reads as glass rather than a solid tab; saturate(1.6)
+     lifts the colour behind so it reads more vividly through the
+     frost (Apple's trick — colour under glass should look *more*
+     alive, not muted); brightness(1.05) compensates for the mild
+     darkening the blur introduces on light backgrounds. */
+  /* Chained with the #liquidGlass SVG filter (defined inline in
+     App.jsx) so the backdrop is *warped* before being blurred — this
+     is what sells the "refractive glass" read vs a flat frost.
+     Chromium/Firefox honour the url(...) part; Safari silently
+     ignores the SVG ref and falls back to the blur/saturate portion,
+     which still reads as glass. */
+  backdrop-filter: url(#liquidGlass) blur(22px) saturate(1.6) brightness(1.05);
+  -webkit-backdrop-filter: blur(22px) saturate(1.6) brightness(1.05);
+  /* Bright hairline rim + layered inset highlights. The top inset
+     line (white 0.25) is the classic "light catches the edge" top-
+     gloss. The outer drop-shadow grounds the pill against the black
+     phone body.
+     Per user: "저 배경 원 밑쪽에 살짝 검정색으로 띠 같이 있는데
+     (네비게이션 바도 그렇고) 그거 없애줘. 깔끔한 버튼을 만들고
+     싶어. liquid glass 스타일링은 유지하면서 말이야." Dropped the
+     `inset 0 -1px 0 rgba(0,0,0,0.42)` bottom dark band — it was
+     making the pill read with a hard visible underscore at the
+     bottom edge, which photographed as a dirty line rather than
+     curvature. Top specular + backdrop-filter blur + the rim
+     border are doing enough curvature work on their own. */
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.26),
+    inset 0 0 28px rgba(255, 255, 255, 0.04),
+    0 14px 36px rgba(0, 0, 0, 0.55);
+  overflow: hidden;  /* keeps ::before/::after highlights inside the radius */
+}
+/* Top-left specular sheen — radial gradient anchored just outside
+   the top-left so the brightest point sits on the curve edge, fading
+   to transparent by ~55% radius. This is what actually sells the
+   "there's a light source above" read. */
+.navBar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      130% 85% at 18% -12%,
+      rgba(255, 255, 255, 0.22) 0%,
+      rgba(255, 255, 255, 0.08) 32%,
+      rgba(255, 255, 255, 0) 56%
+    );
+  z-index: 0;
+}
+/* Bottom-right edge shade — mirror gradient that darkens the far
+   quadrant. Together with ::before this creates the "bent light"
+   impression — the edge nearer the light glows, the far edge is
+   swallowed by refractive shadow — which is the cue users read as
+   "glass" vs just "translucent panel". */
+.navBar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      145% 90% at 85% 118%,
+      rgba(0, 0, 0, 0.30) 0%,
+      rgba(0, 0, 0, 0.12) 30%,
+      rgba(0, 0, 0, 0) 60%
+    );
+  z-index: 0;
+}
+
+/* Legacy class — PNG backing plate is retired. Keeping the rule so
+   the stray <img className={styles.navBg}/> (if still rendered
+   anywhere) disappears cleanly instead of stacking on top of the
+   new CSS glass. */
+.navBg { display: none; }
+
+/* Sliding indicator pill — the dark chip that slides under the
+   currently-active nav item. Now sits on top of the translucent
+   glass, so it needs to read as markedly darker than the bar
+   itself without going back to pure black (which would punch a
+   hole in the glass illusion). A very-low-alpha translucent dark
+   with its own soft rim keeps the hierarchy — active tab is
+   clearly marked, glass material is preserved. */
+.navPill {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 68px;
+  height: 48px;
+  margin-top: -24px;
+  border-radius: 100px;
+  z-index: 1;
+  pointer-events: none;
+  background: rgba(10, 10, 12, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.35);
+  transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.navItem {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px 10px;
+  opacity: 0.55;
+  transition: opacity 0.25s ease;
+}
+.navItem span {
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+  font-size: 10px;
+  font-weight: 400;
+  color: #FFFFFF;
+  line-height: 1;
+}
+.navIcon {
+  width: 22px;
+  height: 20px;
+  object-fit: contain;
+  display: block;
+}
+.navActive {
+  opacity: 1;
+}
+.navItem:active { opacity: 0.6; }
+
+/* ── Global Chat Button ──────────────────────────────────────
+   Mirror of .navBar above — per user ("채팅 버튼도 배경 원 너가
+   만들어주는데, 중앙 이모지는 채팅버튼이모지.png 쓰면 돼"), the
+   legacy NewChat.png (grey-circle-plus-emoji baked into one PNG)
+   is replaced by a CSS-drawn glass circle wrapping the standalone
+   emoji PNG. Same material as the nav pill so the two read as a
+   single glass family sitting on the phone's bottom rail. */
+.chatBtn {
+  position: absolute;
+  left: 302px;
+  bottom: calc(30px + env(safe-area-inset-bottom, 0px));
+  width: 66px;
+  height: 66px;
+  padding: 0;
+  cursor: pointer;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(30, 30, 34, 0.38);
+  /* Chained with the #liquidGlass SVG filter (defined inline in
+     App.jsx) so the backdrop is *warped* before being blurred — this
+     is what sells the "refractive glass" read vs a flat frost.
+     Chromium/Firefox honour the url(...) part; Safari silently
+     ignores the SVG ref and falls back to the blur/saturate portion,
+     which still reads as glass. */
+  backdrop-filter: url(#liquidGlass) blur(22px) saturate(1.6) brightness(1.05);
+  -webkit-backdrop-filter: blur(22px) saturate(1.6) brightness(1.05);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  /* Per user: "저 채팅 이미지 배경에 shadow같은게 있나? 없애줘...
+     그리고 저 배경 원 밑쪽에 살짝 검정색으로 띠 같이 있는데 그거
+     없애줘. 깔끔한 버튼을 만들고싶어." Dropped two layers:
+       • `inset 0 -1px 0 rgba(0,0,0,0.42)` — the hard bottom dark
+         band that read as a dirty underscore on the circle edge.
+       • `0 14px 36px rgba(0,0,0,0.55)` — the outer drop-shadow the
+         user called out as the "chat image background shadow".
+     Kept the liquid-glass essentials: translucent tint + backdrop
+     blur + hairline rim + top specular inset, so the button still
+     reads as glass but without the heavy shadow halo or dirty
+     bottom line. */
+  box-shadow:
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.26),
+    inset 0 0 20px rgba(255, 255, 255, 0.04);
+  overflow: hidden;
+  transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), opacity 0.2s;
+}
+/* Top-left specular sheen — twin to .navBar::before, shaped to a
+   round button. */
+.chatBtn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      120% 85% at 20% -8%,
+      rgba(255, 255, 255, 0.28) 0%,
+      rgba(255, 255, 255, 0.10) 34%,
+      rgba(255, 255, 255, 0) 58%
+    );
+  z-index: 0;
+}
+/* Bottom-right refractive shade. */
+.chatBtn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      140% 90% at 85% 115%,
+      rgba(0, 0, 0, 0.32) 0%,
+      rgba(0, 0, 0, 0.14) 30%,
+      rgba(0, 0, 0, 0) 60%
+    );
+  z-index: 0;
+}
+/* The emoji glyph sits at the circle's centre. 채팅버튼이모지.png
+   is 72×64 (1.125:1). Displayed at 34×30 (46% of the 66px circle)
+   it reads as a confident glyph without crowding the rim. Drop-
+   shadow adds a tiny lift so the white glyph doesn't flatten into
+   the glass beneath it on lighter backdrops. z-index sits above
+   the pseudo-highlight layers. */
+/* Glyph inside the 66×66 glass circle. Footprint is 34×30 to fit
+   ChatEmoji.png's wide speech-bubble silhouette; object-fit:contain
+   protects aspect ratio in case a future asset swap lands a
+   non-matching shape.
+   opacity:0.78 bleeds the sticker into the liquid-glass material
+   beneath it — without the dim, the PNG reads as a solid decal
+   glued onto the glass; with it, the glyph feels cut from the same
+   translucent material as everything else in the chrome. Per user
+   "투명도를 조금 낮춰". z-index:1 lifts above ::before/::after
+   gloss; drop-shadow adds a faint depth off the plate. */
+.chatBtnGlyph {
+  width: 34px;
+  height: 30px;
+  display: block;
+  position: relative;
+  z-index: 1;
+  object-fit: contain;
+  opacity: 0.78;
+  /* Drop-shadow removed per user: "저 채팅 이미지 배경에 shadow
+     같은게 있나? 없애줘." The previous
+     `drop-shadow(0 1px 2px rgba(0,0,0,0.55))` was casting a soft
+     halo of the speech-bubble silhouette onto the glass surface
+     beneath, which read as dirt when the user wanted a clean glyph
+     sitting on clean glass. 0.78 opacity already bleeds the sticker
+     into the material enough that no extra depth cue is needed. */
+}
+.chatBtn:active { opacity: 0.75; }
+
+
+/* ── Nav slide-out ─────────────────────────────────────────── */
+.navHidden {
+  transform: translateX(-120%) !important;
+  opacity: 0 !important;
+  pointer-events: none;
+}
+.navBar {
+  transition: transform 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.25s ease;
+}
+
+/* ── Chat Bar ───────────────────────────────────────────────
+   하단 고정, 내용 늘어나면 위로 성장
+   left=25px right=25px r=34
+
+   Per user: "이거 채팅 박스도 liquid glass 스타일로 해줘. 나머지
+   애들처럼." Swapped the old flat `#181818` base + single inset
+   shadow for the full liquid-glass material family — same recipe
+   as `.navBar` and the splash `Get Started` button so the chat
+   bar reads as part of the same "floating glass controls" tier.
+
+   Recipe:
+     • rgba(30,30,34,0.38)  translucent dark tint
+     • backdrop-filter: url(#liquidGlass) blur(22px) saturate(1.6)
+                         brightness(1.05)  — SVG noise warp + frost
+     • 1px solid rgba(255,255,255,0.14)  bright hairline rim
+     • layered inset shadows: top white gloss + bottom black edge
+     • drop-shadow grounds the bar against the dimmed content
+     • ::before top-left specular sheen, ::after bottom-right
+       refractive shade — same radial gradients as .navBar
+
+   Notes:
+     • overflow: hidden clips the ::before/::after gradients to
+       the 34px border-radius; safe because the textarea uses
+       overflow: hidden internally and the bar grows with content.
+     • The chatDim underneath tints what shows through the glass
+       dark, which actually *enhances* the refractive read — the
+       bar looks like dark glass over a darkened world, not a
+       matte tab pasted onto the screen.                       */
+.chatBar {
+  position: absolute;
+  left: 25px;
+  right: 25px;
+  bottom: calc(30px + env(safe-area-inset-bottom, 0px));
+  /* height: auto — 내용따라 위로 늘어남 */
+  border-radius: 34px;
+  z-index: 150;
+  background: rgba(30, 30, 34, 0.38);
+  backdrop-filter: url(#liquidGlass) blur(22px) saturate(1.6) brightness(1.05);
+  -webkit-backdrop-filter: blur(22px) saturate(1.6) brightness(1.05);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  /* Bottom dark band dropped to match the chatBtn/navBar cleanup
+     pass — user called out the `inset 0 -1px 0 rgba(0,0,0,0.42)`
+     underscore on the circle + rail; same recipe is shared here
+     on the chat input surface, so it would produce the same dirty
+     line at the bottom of the open bar. Keeping the top specular
+     + backdrop-filter so the bar still reads as liquid glass. */
+  box-shadow:
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.26),
+    inset 0 0 28px rgba(255, 255, 255, 0.04),
+    0 14px 36px rgba(0, 0, 0, 0.55);
+  overflow: hidden;  /* clips ::before/::after sheens to border-radius */
+
+  /* 초기 상태: 화면 밖 아래 */
+  transform: translateY(calc(100% + 30px));
+  opacity: 0;
+  transition: transform 0.38s cubic-bezier(0.32,0.72,0,1),
+              opacity 0.25s ease,
+              bottom 0.22s ease;
+  pointer-events: none;
+}
+/* Top-left specular sheen — twin of .navBar::before. The brightest
+   point sits just outside the top-left corner so the curve catches
+   the "overhead" highlight and fades across by ~55%. */
+.chatBar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      130% 85% at 18% -12%,
+      rgba(255, 255, 255, 0.22) 0%,
+      rgba(255, 255, 255, 0.08) 32%,
+      rgba(255, 255, 255, 0) 56%
+    );
+  z-index: 0;
+}
+/* Bottom-right refractive shade — twin of .navBar::after. Darkens
+   the far-from-light quadrant so the bar reads as a curved, lit
+   object rather than a flat pane. */
+.chatBar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      145% 90% at 85% 118%,
+      rgba(0, 0, 0, 0.30) 0%,
+      rgba(0, 0, 0, 0.12) 30%,
+      rgba(0, 0, 0, 0) 60%
+    );
+  z-index: 0;
+}
+.chatBarOpen {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* textarea — 자동 높이, 버튼 영역(우하단) 확보.
+   position: relative + z-index: 1 so the input rides above the
+   .chatBar::before/::after sheen layers (both z-index: 0).       */
+.chatInput {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  min-height: 118px;          /* 기본 최소 높이 (196 × 3/5) */
+  padding: 20px 20px 64px;    /* 하단에 버튼 row 공간 */
+  background: none;
+  border: none;
+  outline: none;
+  resize: none;
+  overflow: hidden;           /* 스크롤 없이 높이 자동 확장 */
+  color: #ffffff;
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.6;
+  caret-color: #fff;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  box-sizing: border-box;
+}
+.chatInput::placeholder {
+  color: rgba(255, 255, 255, 0.45); /* 살짝 밝게 — 글래스 위에서 읽힘 */
+}
+
+/* ── Chat button 작아지는 애니메이션
+   66×66 → 36×36 (scale 0.545), center 위치 유지       ── */
+.chatBtnSmall {
+  transform: scale(0.545);
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+/* ── Dim overlay — 채팅창 뒤 콘텐츠 어둡게, 클릭 시 닫기 ── */
+.chatDim {
+  position: absolute;
+  inset: 0;
+  z-index: 130;
+  background: rgba(0, 0, 0, 0.55);
+  animation: dimIn 0.3s ease forwards;
+}
+@keyframes dimIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}

@@ -1,0 +1,252 @@
+/* ============================================================
+   HomeScreen — Figma node 2213:2797 (Home 9)  402 × 874
+   ============================================================ */
+.screen {
+  width: 100%;
+  height: 100%;
+  /* background is on .phone (App.module.css) so the SharedCharacter living
+     between .phone and .screenWrap can paint through this transparent layer. */
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── Profile button (25,60) 44×44 ─────────────────────────── */
+.profileBtn {
+  position: absolute;
+  left: 25px;
+  top: 60px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.profileBtn img {
+  width: 44px;
+  height: 44px;
+  display: block;
+}
+.profileBtn:active { opacity: 0.7; }
+
+/* ── Greeting — vertically centered with profile btn (top:60 h:44) ── */
+.greeting {
+  position: absolute;
+  left: 82px;
+  top: 60px;
+  height: 44px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+}
+.greetName {
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+  font-size: 20px;
+  font-weight: 500;
+  color: #FFFFFF;
+  line-height: 1.35;
+  margin: 0;
+}
+.greetSub {
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  color: rgba(255,255,255,0.45);
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* ── Alarm button (333,60) 44×44 ──────────────────────────── */
+.alarmBtn {
+  position: absolute;
+  left: 324px;
+  top: 60px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.alarmBtn img {
+  width: 44px;
+  height: 44px;
+  display: block;
+}
+.alarmBtn:active { opacity: 0.7; }
+
+/* ── Character image (same as splash, +20px down, +10% size) ── */
+.charImg {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 229px;
+  width: 435px;
+  height: 437px;
+  object-fit: fill;
+  pointer-events: none;
+  animation: charFloat 6s ease-in-out infinite;
+}
+@keyframes charFloat {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50%      { transform: translateX(-50%) translateY(-8px); }
+}
+
+/* ── Tagline (47,409) 309×56 ──────────────────────────────── */
+.tagline {
+  position: absolute;
+  left: 47px;
+  top: 409px;
+  width: 309px;
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+  font-size: 36px;
+  font-weight: 400;
+  font-style: normal;
+  color: #FFFFFF;
+  line-height: 1.2;
+  margin: 0;
+  letter-spacing: -0.3px;
+  opacity: 0;
+  animation: fadeSlideUp 1s ease-out 0.3s forwards;
+}
+
+/* ── Sub tagline (67,466) 269×27 ──────────────────────────── */
+.subTagline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 466px;
+  text-align: center;
+  white-space: nowrap;
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+  font-size: 19px;
+  font-weight: 400;
+  font-style: normal;
+  color: rgba(255,255,255,0.85);
+  line-height: 1.4;
+  margin: 0;
+  opacity: 0;
+  animation: fadeSlideUp 1s ease-out 0.6s forwards;
+}
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Italic spans (PP Editorial New italic) ────────────────── */
+.italic {
+  font-family: 'PP Editorial New', 'PT Serif', serif;
+  font-style: italic;
+  font-weight: 400;
+  animation: glowPulse 4s ease-in-out infinite;
+}
+@keyframes glowPulse {
+  0%, 100% { text-shadow: 0 0 0 transparent; }
+  50%      { text-shadow: 0 0 18px rgba(255,120,130,0.25); }
+}
+
+/* Swap word — width locked to "words." */
+.swapWord {
+  display: inline-block;
+  position: relative;
+  vertical-align: baseline;
+}
+.swapSizer {
+  visibility: hidden;
+  font-family: 'PP Editorial New', 'PT Serif', serif;
+  font-style: italic;
+  font-weight: 400;
+}
+.swapText {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+}
+
+/* Word swap fade */
+.wordVisible {
+  opacity: 1;
+  transition: opacity 0.8s ease;
+}
+.wordHidden {
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+
+
+/* ── Navigation bar (25,778) 275×66 ───────────────────────── */
+.navBar {
+  position: absolute;
+  left: 25px;
+  bottom: calc(30px + env(safe-area-inset-bottom, 0px));
+  width: 275px;
+  height: 66px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.navBg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+}
+
+.navItem {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px 10px;
+  opacity: 0.45;
+  transition: opacity 0.15s;
+}
+.navItem span {
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+  font-size: 10px;
+  font-weight: 400;
+  color: #FFFFFF;
+  line-height: 1;
+}
+.navIcon {
+  width: 22px;
+  height: 20px;
+  object-fit: contain;
+  display: block;
+}
+.navActive {
+  opacity: 1;
+}
+.navItem:active { opacity: 0.6; }
+
+/* ── New Chat button (311,778) 66×66 ──────────────────────── */
+.chatBtn {
+  position: absolute;
+  left: 311px;
+  bottom: calc(30px + env(safe-area-inset-bottom, 0px));
+  width: 66px;
+  height: 66px;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.chatBtn img {
+  width: 66px;
+  height: 66px;
+  display: block;
+}
+.chatBtn:active { opacity: 0.7; }

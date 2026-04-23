@@ -1,0 +1,194 @@
+/* ============================================================
+   SplashScreen — Figma 4001:412 (Home 12)  402 × 874
+   ============================================================ */
+.screen {
+  width: 100%;
+  height: 100%;
+  background: #000000;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── 캐릭터 이미지 (4001:499)
+   Figma: x=4 y=209 w=395 h=397
+   entry anim: 하단 바깥에서 올라와 정위치에 안착.
+   - 0%   : translateY(+120%) + opacity 0 — 화면 아래로 완전히 밀려
+            있음. +120% 는 자기 높이의 1.2배만큼 아래라서 풀샷으로
+            벗어나, 등장의 "이제 막 떠오름" 인상이 살아난다.
+   - 60%  : opacity 이미 1 도달 — 올라오는 동안 이미 완전히 보이게.
+            opacity 가 마지막에 보간되면 상승 구간에서 half-faded
+            한 모습으로 보여서 모션이 흐릿해진다.
+   - 100% : translateY(0) — 4001:499 의 원 위치.
+   타이밍 곡선: cubic-bezier(0.22, 1, 0.36, 1) — ease-out-quint 계열.
+   처음엔 빠르게 치고 올라와서 거의 다 도달했을 때 부드럽게
+   감속하는 낙하-반전-도착 같은 느낌.
+   forwards 채우기로 애니메이션 끝난 뒤에도 transform 이 유지됨. */
+.character {
+  position: absolute;
+  left: 4px;
+  top: 209px;
+  width: 395px;
+  height: 397px;
+  object-fit: fill;
+  opacity: 0;
+  transform: translateY(120%);
+  animation: charRise 1100ms cubic-bezier(0.22, 1, 0.36, 1) 120ms forwards;
+  will-change: transform, opacity;
+}
+
+@keyframes charRise {
+  0% {
+    opacity: 0;
+    transform: translateY(120%);
+  }
+  55% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Heart Vessel 로고 이미지
+   titleGroup 자리에 동일한 영역 커버.
+   entry: 캐릭터가 안착하기 직전(총 1100ms 중 ~85% 지점)에서
+   살짝 겹치게 시작해 느리게 피어오르듯 나타남.
+   delay 900ms + duration 1100ms = 2000ms 근방에서 완전히 보임. */
+.logo {
+  position: absolute;
+  left: 50%;
+  top: 353px;
+  transform: translate(-50%, 8px);
+  width: 300px;
+  height: auto;
+  object-fit: contain;
+  pointer-events: none;
+  opacity: 0;
+  animation: logoReveal 1100ms cubic-bezier(0.22, 1, 0.36, 1) 900ms forwards;
+  will-change: transform, opacity;
+}
+
+@keyframes logoReveal {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+/* ── Get Started 버튼 — per user:
+   "지금 홈 화면에 있는 버튼 사이즈로 똑같이 너가 직접 만들어서
+   그 하단에 배치해줘. 지금꺼는 제거하고."
+
+   홈 네비게이션 바 (App.module.css의 .navBar, 265×66 liquid-glass
+   pill)와 완전히 동일한 material/치수. 단일 CTA 이므로 중앙 정렬.
+
+   Material recipe (.navBar 복제):
+   - rgba(30,30,34,0.38) 다크 translucent tint
+   - backdrop-filter: url(#liquidGlass) blur(22px) saturate(1.6)
+     brightness(1.05)  ← #liquidGlass SVG 필터는 App.jsx 루트에
+     정의되어 있어서 splash 에서도 그대로 사용 가능
+   - 1px solid rgba(255,255,255,0.14) 림
+   - 이중 inset shadow 로 상단 하이라이트 + 하단 그림자
+   - 외부 drop-shadow 로 검은 배경과 분리
+
+   entry anim: 로고 페이드 끝나갈 무렵 등장 — 마지막 순차 reveal. */
+.getStartedBtn {
+  position: absolute;
+  left: 50%;
+  bottom: calc(60px + env(safe-area-inset-bottom, 0px));
+  transform: translate(-50%, 12px);
+  width: 265px;
+  height: 66px;
+  border-radius: 33px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(30, 30, 34, 0.38);
+  backdrop-filter: url(#liquidGlass) blur(22px) saturate(1.6) brightness(1.05);
+  -webkit-backdrop-filter: blur(22px) saturate(1.6) brightness(1.05);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.26),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.42),
+    inset 0 0 28px rgba(255, 255, 255, 0.04),
+    0 14px 36px rgba(0, 0, 0, 0.55);
+  overflow: hidden;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  opacity: 0;
+  animation: btnReveal 900ms cubic-bezier(0.22, 1, 0.36, 1) 1900ms forwards;
+  will-change: transform, opacity;
+  transition: opacity 0.15s, transform 0.15s;
+}
+/* 탭 시 살짝 눌린 느낌 — entry 애니메이션 끝난 후의 상태를
+   기준으로 동작 (transform 은 translate(-50%, 0) 이므로 scale
+   만 얹어 중앙 정렬은 그대로 유지). */
+.getStartedBtn:active {
+  opacity: 0.85;
+  transform: translate(-50%, 0) scale(0.98);
+}
+
+/* ::before / ::after — .navBar 레시피 그대로 이식.
+   상단-좌측 스펙큘러 하이라이트 + 하단-우측 엣지 그늘.
+   "광원이 위에 있다"는 곡면 인상을 만드는 핵심 큐. */
+.getStartedBtn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      130% 85% at 18% -12%,
+      rgba(255, 255, 255, 0.22) 0%,
+      rgba(255, 255, 255, 0.08) 32%,
+      rgba(255, 255, 255, 0) 56%
+    );
+  z-index: 0;
+}
+.getStartedBtn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      145% 90% at 85% 118%,
+      rgba(0, 0, 0, 0.30) 0%,
+      rgba(0, 0, 0, 0.12) 30%,
+      rgba(0, 0, 0, 0) 60%
+    );
+  z-index: 0;
+}
+
+/* 라벨 — 글래스 재질 위에서 읽히도록 순백 + 살짝 아래 섀도우로
+   떠 있는 느낌. Figma 타이포 톤에 맞춰 PP Neue Montreal fallback. */
+.getStartedLabel {
+  position: relative;
+  z-index: 1;
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+  font-size: 17px;
+  font-weight: 500;
+  color: #FFFFFF;
+  letter-spacing: 0.01em;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  line-height: 1;
+}
+
+@keyframes btnReveal {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}

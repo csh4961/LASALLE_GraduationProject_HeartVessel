@@ -1,0 +1,185 @@
+/* ===== SHARED SCREEN LAYOUT ===== */
+
+/* Base screen */
+.screen {
+  width: 100%;
+  height: 100%;
+  background: var(--bg);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Content layer (above decorative bg) */
+.content {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Top bar */
+.topBar {
+  flex-shrink: 0;
+  padding-top: var(--top-padding);
+  padding-left: 24px;
+  padding-right: 24px;
+  padding-bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Back / home buttons */
+.backBtn, .homeBtn {
+  background: transparent;
+  border: none;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+/* Section label row (dash + text) */
+.sectionRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.dash {
+  width: 24px;
+  height: 2px;
+  background: rgb(255, 131, 134);
+  border-radius: 1px;
+  flex-shrink: 0;
+}
+.sectionLabel {
+  font-family: 'PT Serif', serif;
+  font-size: 13px;
+  color: rgb(255, 131, 134);
+}
+
+/* Page title */
+.pageTitle {
+  font-family: 'PT Serif', serif;
+  font-size: clamp(22px, 6.5vw, 26px);
+  font-weight: 700;
+  color: var(--red);
+  line-height: 1.25;
+  margin-top: 4px;
+}
+
+/* Header block */
+.header {
+  flex-shrink: 0;
+  padding: 12px 32px 0;
+}
+
+/* Scrollable content area */
+.scrollArea {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 12px 20px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  scrollbar-width: none;
+}
+.scrollArea::-webkit-scrollbar { display: none; }
+
+/* Footer with primary button */
+.footer {
+  flex-shrink: 0;
+  padding: 10px 32px;
+  padding-bottom: var(--bottom-padding);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Primary button */
+.primaryBtn {
+  width: 100%;
+  height: 64px;
+  background: var(--red-btn);
+  border-radius: 16px;
+  box-shadow: var(--shadow-btn);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.primaryBtn span {
+  font-family: 'PT Serif', serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* Secondary text button */
+.secondaryBtn {
+  width: 100%;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+}
+.secondaryBtn span {
+  font-size: 15px;
+  color: var(--text-muted);
+}
+
+/* White card */
+.card {
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: var(--shadow-card);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.cardLabel {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--red-light);
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+}
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.cardText {
+  font-size: 14px;
+  color: var(--text-mid);
+  line-height: 22px;
+  font-family: 'PT Serif', serif;
+}
+.cardIcon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+.iconShape {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}

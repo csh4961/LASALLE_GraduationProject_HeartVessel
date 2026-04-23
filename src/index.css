@@ -1,0 +1,196 @@
+@import url('https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* ── PP Editorial New ───────────────────────── */
+@font-face {
+  font-family: 'PP Editorial New';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/fonts/PPEditorialNew/PPEditorialNew-Regular.otf') format('opentype');
+}
+@font-face {
+  font-family: 'PP Editorial New';
+  font-style: italic;
+  font-weight: 400;
+  src: url('/fonts/PPEditorialNew/PPEditorialNew-Italic.otf') format('opentype');
+}
+@font-face {
+  font-family: 'PP Editorial New';
+  font-style: normal;
+  font-weight: 800;
+  src: url('/fonts/PPEditorialNew/PPEditorialNew-Ultrabold.otf') format('opentype');
+}
+@font-face {
+  font-family: 'PP Editorial New';
+  font-style: italic;
+  font-weight: 800;
+  src: url('/fonts/PPEditorialNew/PPEditorialNew-UltraboldItalic.otf') format('opentype');
+}
+
+/* ── PP Neue Montreal ───────────────────────── */
+@font-face {
+  font-family: 'PP Neue Montreal';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/fonts/PP Neue Montreal/PPNeueMontreal-Book.otf') format('opentype');
+}
+@font-face {
+  font-family: 'PP Neue Montreal';
+  font-style: normal;
+  font-weight: 500;
+  src: url('/fonts/PP Neue Montreal/PPNeueMontreal-Medium.otf') format('opentype');
+}
+@font-face {
+  font-family: 'PP Neue Montreal';
+  font-style: normal;
+  font-weight: 700;
+  src: url('/fonts/PP Neue Montreal/PPNeueMontreal-Bold.otf') format('opentype');
+}
+@font-face {
+  font-family: 'PP Neue Montreal';
+  font-style: italic;
+  font-weight: 400;
+  src: url('/fonts/PP Neue Montreal/PPNeueMontreal-Italic.otf') format('opentype');
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+:root {
+  /* Original pink/red color scheme */
+  --bg: #FEF0EC;
+  --red: #FF484D;
+  --red-btn: #F87171;
+  --red-light: #FF9494;
+  --red-pale: #FFC1C1;
+  --red-bg: #FFF5F5;
+  --text-dark: #31251E;
+  --text-mid: #3A3A3A;
+  --text-muted: #C4A99F;
+  --text-label: #C4A99F;
+  --shadow-card: 0px 4px 16px rgba(0,0,0,0.06);
+  --shadow-btn: 0px 8px 24px rgba(248,113,113,0.28);
+  --radius-card: 20px;
+  --font: 'Inter', -apple-system, 'Helvetica Neue', sans-serif;
+
+  /* Liquid glass */
+  --glass-bg: rgba(255,255,255,0.18);
+  --glass-shadow:
+    inset 0 0 22px rgba(255,255,255,0.4),
+    inset -2px -2px 1px rgba(255,255,255,0.6),
+    inset 2px 2px 1px rgba(255,255,255,0.6),
+    inset 3px 3px 0.5px rgba(255,255,255,0.3);
+
+  /* Safe area */
+  --sat: env(safe-area-inset-top, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --top-padding: max(52px, calc(var(--sat) + 16px));
+  --bottom-padding: max(24px, calc(var(--sab) + 12px));
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #E8CFC9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font);
+}
+
+/* iPhone 17 Pro: 393 × 852 */
+#root {
+  width: 393px;
+  height: 852px;
+  background: var(--bg);
+  overflow: hidden;
+  position: relative;
+  border-radius: 44px;
+  box-shadow: 0px 24px 80px rgba(0,0,0,0.22);
+  flex-shrink: 0;
+}
+
+/* 뷰포트가 좁으면 화면에 맞게 축소 */
+@media (max-width: 433px) {
+  #root {
+    width: 100vw;
+    height: calc(100vw * 852 / 393);
+    max-height: 100dvh;
+    border-radius: 0;
+  }
+}
+
+/* 뷰포트가 낮으면 높이 기준으로 축소 */
+@media (max-height: 872px) and (min-width: 433px) {
+  #root {
+    height: 100dvh;
+    width: calc(100dvh * 393 / 852);
+  }
+}
+
+button {
+  border: none;
+  cursor: pointer;
+  font-family: var(--font);
+  background: transparent;
+}
+
+input, textarea {
+  font-family: var(--font);
+  outline: none;
+  border: none;
+}
+
+textarea { resize: none; }
+
+/* ===== BACKGROUND ELLIPSES ===== */
+.bg-ellipse-orange {
+  position: absolute;
+  left: -205px; top: 222px;
+  width: 336px; height: 336px;
+  background: rgba(240,110,0,0.39);
+  border-radius: 50%;
+  filter: blur(150px);
+  pointer-events: none;
+  z-index: 0;
+}
+.bg-ellipse-pink {
+  position: absolute;
+  left: -14px; top: 612px;
+  width: 615px; height: 615px;
+  background: rgb(255,159,154);
+  border-radius: 50%;
+  filter: blur(150px);
+  pointer-events: none;
+  z-index: 0;
+}
+.bg-ellipse-rose {
+  position: absolute;
+  left: 180px; top: -197px;
+  width: 400px; height: 402px;
+  background: rgb(248,177,171);
+  border-radius: 50%;
+  filter: blur(219px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Liquid glass */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  box-shadow: var(--glass-shadow);
+}
+
+.screen-base {
+  width: 100%;
+  height: 100%;
+  background: var(--bg);
+  position: relative;
+  overflow: hidden;
+}

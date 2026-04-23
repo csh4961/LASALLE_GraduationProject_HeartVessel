@@ -1,0 +1,369 @@
+/* ============================================================
+   ArchiveDetailScreen — the sent-message archive detail page
+   ============================================================
+   Mirrors VesselDetailScreen's layout/voice — editorial italic
+   header, message hero, conversation transcript — but retains
+   Archive-specific features:
+     • "How did they respond?" response capture
+     • Coach-generated reflection once a response lands
+   Per user: "archive 들어가서 이제 들어가서 하나 들어가면 지금
+   내가 첨부한 이미지 2번 처럼 나오는데, 이건 내 예전 디자인이잖아.
+   수정해." Retired the old stacked-card form layout (Your message /
+   Observation / Person perspective / Message sent / How did they
+   respond / Reflection) in favour of the letter-style reading
+   experience used by Vessel detail — both destinations now share
+   one detail design language.
+   ============================================================ */
+
+.screen {
+  width: 100%;
+  height: 100%;
+  background: #000000;
+  position: relative;
+  overflow: hidden;
+  color: #FFFFFF;
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+}
+
+.backBtn {
+  position: absolute;
+  top: calc(24px + env(safe-area-inset-top, 0px));
+  left: 20px;
+  z-index: 20;
+}
+
+.scrollArea {
+  position: absolute;
+  inset: 0;
+  padding:
+    calc(92px + env(safe-area-inset-top, 0px))
+    28px
+    140px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  box-sizing: border-box;
+}
+.scrollArea::-webkit-scrollbar { display: none; }
+.scrollArea { scrollbar-width: none; }
+
+/* ── Header — "Sent to {name}" + timestamp ───────────────── */
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 28px;
+}
+.toLabel {
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+.recipient {
+  font-family: 'PP Editorial New', 'Georgia', serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: 30px;
+  line-height: 36px;
+  letter-spacing: -0.01em;
+  color: #FFFFFF;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.recipientOrnament {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  flex-shrink: 0;
+  transform: translateY(-1px);
+}
+.metaRow {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.55);
+  letter-spacing: 0.02em;
+}
+.metaDot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  display: inline-block;
+}
+
+.sectionKicker {
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 180, 186, 0.82);
+  margin: 0 0 12px 0;
+}
+
+.divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 28px 0;
+  border: 0;
+}
+
+/* ── Sent message (hero) ─────────────────────────────────── */
+.messageBlock {
+  position: relative;
+  padding: 4px 0 6px;
+}
+.messageText {
+  font-family: 'PP Editorial New', 'Georgia', serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 28px;
+  color: rgba(255, 255, 255, 0.96);
+  margin: 0;
+  white-space: pre-wrap;
+}
+.messageText::before {
+  content: '\201C';
+  display: inline;
+  margin-right: 2px;
+  color: rgba(255, 180, 186, 0.9);
+}
+.messageText::after {
+  content: '\201D';
+  display: inline;
+  margin-left: 2px;
+  color: rgba(255, 180, 186, 0.9);
+}
+
+/* ── Conversation transcript (left-rail) ─────────────────── */
+.transcript {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  position: relative;
+  padding-left: 14px;
+}
+.transcript::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.10);
+}
+.turn {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.turnRoleUser {
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 210, 214, 0.85);
+}
+.turnRoleCoach {
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(180, 220, 255, 0.75);
+}
+.turnBody {
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  color: rgba(255, 255, 255, 0.86);
+  margin: 0;
+  white-space: pre-wrap;
+}
+.transcriptEmpty {
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 20px;
+  color: rgba(255, 255, 255, 0.45);
+  font-style: italic;
+  margin: 0;
+  padding-left: 14px;
+}
+
+/* ── Archive-only: response capture ──────────────────────── */
+/* Liquid-glass input panel — matches the nav-bar recipe used by
+   .chatBar / .draftWordsBox so response capture reads as part
+   of the same material family as the composition flow.        */
+.responseBlock {
+  position: relative;
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(30, 30, 34, 0.38);
+  backdrop-filter: url(#liquidGlass) blur(22px) saturate(1.6) brightness(1.05);
+  -webkit-backdrop-filter: blur(22px) saturate(1.6) brightness(1.05);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.26),
+    inset 0 0 28px rgba(255, 255, 255, 0.04),
+    0 14px 36px rgba(0, 0, 0, 0.45);
+  padding: 16px 16px 14px;
+  overflow: hidden;
+}
+.responseBlock::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      130% 85% at 18% -12%,
+      rgba(255, 255, 255, 0.22) 0%,
+      rgba(255, 255, 255, 0.08) 32%,
+      rgba(255, 255, 255, 0) 56%
+    );
+  z-index: 0;
+}
+.responseBlock::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      145% 90% at 85% 118%,
+      rgba(0, 0, 0, 0.30) 0%,
+      rgba(0, 0, 0, 0.12) 30%,
+      rgba(0, 0, 0, 0) 60%
+    );
+  z-index: 0;
+}
+.responseBlock > * {
+  position: relative;
+  z-index: 1;
+}
+.responseInput {
+  width: 100%;
+  min-height: 72px;
+  box-sizing: border-box;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  resize: none;
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+  font-size: 14px;
+  line-height: 22px;
+  color: rgba(255, 255, 255, 0.94);
+  caret-color: #FFFFFF;
+  padding: 0;
+  margin: 8px 0 0;
+  display: block;
+}
+.responseInput::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+.savedResponse {
+  font-family: 'PP Editorial New', 'Georgia', serif;
+  font-style: italic;
+  font-size: 15px;
+  line-height: 24px;
+  color: rgba(255, 255, 255, 0.88);
+  margin: 10px 0 0;
+  white-space: pre-wrap;
+}
+.responseActions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+.saveBtn {
+  position: relative;
+  padding: 8px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(30, 30, 34, 0.42);
+  color: rgba(255, 255, 255, 0.96);
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  overflow: hidden;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.24),
+    inset 0 0 16px rgba(255, 255, 255, 0.04),
+    0 6px 16px rgba(0, 0, 0, 0.4);
+  transition: transform 0.15s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+.saveBtn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      130% 85% at 18% -12%,
+      rgba(255, 255, 255, 0.22) 0%,
+      rgba(255, 255, 255, 0.08) 32%,
+      rgba(255, 255, 255, 0) 56%
+    );
+  z-index: 0;
+}
+.saveBtn > span {
+  position: relative;
+  z-index: 1;
+}
+.saveBtn:active {
+  transform: scale(0.97);
+}
+.saveBtn:disabled {
+  opacity: 0.42;
+  cursor: default;
+}
+
+/* ── Reflection footer ───────────────────────────────────── */
+.reflectionBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.reflectionText {
+  font-family: 'PP Editorial New', 'Georgia', serif;
+  font-style: italic;
+  font-size: 16px;
+  line-height: 26px;
+  color: rgba(255, 255, 255, 0.86);
+  margin: 0;
+  white-space: pre-wrap;
+}
+.dots {
+  display: inline-flex;
+  gap: 5px;
+  padding: 6px 0;
+}
+.dots span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 180, 186, 0.75);
+  display: inline-block;
+  animation: reflectPulse 1.2s ease-in-out infinite;
+}
+.dots span:nth-child(2) { animation-delay: 0.15s; }
+.dots span:nth-child(3) { animation-delay: 0.3s; }
+@keyframes reflectPulse {
+  0%, 100% { opacity: 0.25; transform: translateY(0); }
+  50%      { opacity: 1;   transform: translateY(-2px); }
+}

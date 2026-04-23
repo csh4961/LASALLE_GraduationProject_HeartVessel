@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "heart-vessel-v2",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["vite", "--port", "3001"],
+      "cwd": "/Users/suhocho/Desktop/heart-vessel-v2",
+      "port": 3001
+    }
+  ]
+}

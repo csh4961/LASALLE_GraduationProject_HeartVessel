@@ -1,0 +1,268 @@
+/* ============================================================
+   FamilyScreen — People list, Liquid-Glass pass
+
+   Per user ("여기도 liquid glass 스타일로 적용해"): this screen
+   was the last holdout with flat #111111 cards and a plain
+   translucent pill button. Pulled in the same material recipe
+   the rest of the app uses (ArchiveScreen cards + slideChatBar
+   composer):
+     - translucent dark-neutral core
+     - url(#liquidGlass) SVG refraction + blur + saturate
+     - thin white inset border + top specular sheen on ::before
+     - restrained outer drop-shadow
+
+   Also removed in this pass: the MBTI chip under each name and
+   the row-level trash-can button. The .cardMeta / .cardMbti /
+   .cardActions / .deleteBtn / .confirmBtn / .dim rules are
+   deleted here since the markup no longer references them.
+   ============================================================ */
+.screen {
+  width: 100%;
+  height: 100%;
+  background: #000000;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ── Header ─────────────────────────────────────────────── */
+.header {
+  flex-shrink: 0;
+  height: 104px;
+  display: flex;
+  align-items: flex-end;
+  padding: 0 25px 14px;
+  box-sizing: border-box;
+  position: relative;
+}
+
+/* Back-button POSITIONING ONLY — visuals in shared <BackButton>. */
+.backBtn {
+  position: absolute;
+  left: 25px;
+  top: 60px;
+}
+
+.title {
+  position: absolute;
+  left: 50%;
+  top: 60px;
+  transform: translateX(-50%);
+  height: 44px;
+  display: flex;
+  align-items: center;
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+  font-size: 17px;
+  font-weight: 500;
+  color: #FFFFFF;
+  white-space: nowrap;
+}
+
+/* ── List ────────────────────────────────────────────────── */
+.list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 25px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  scrollbar-width: none;
+}
+.list::-webkit-scrollbar { display: none; }
+
+/* Empty state */
+.empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 8px;
+  padding: 60px 20px 0;
+}
+.emptyTitle {
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+  font-size: 17px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.7);
+  margin: 0;
+}
+.emptySub {
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  color: rgba(255,255,255,0.3);
+  line-height: 1.6;
+  margin: 0;
+  max-width: 260px;
+}
+
+/* ── Member card — liquid-glass panel ────────────────────────
+   Mirrors .entryCard in ArchiveScreen so both list surfaces
+   read as the same glass family. Translucent dark-neutral fill,
+   thin specular rim on top, soft outer shadow, press-state
+   scales + brightens. */
+.card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  border-radius: 18px;
+  padding: 14px 16px 14px 16px;
+  text-align: left;
+  cursor: pointer;
+  z-index: 10;
+
+  background: rgba(255, 255, 255, 0.045);
+  backdrop-filter: url(#liquidGlass) blur(18px) saturate(1.35);
+  -webkit-backdrop-filter: blur(18px) saturate(1.35);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 2px 10px rgba(0, 0, 0, 0.18);
+
+  transition: background 0.18s ease, box-shadow 0.18s ease, transform 0.15s ease;
+}
+.card:active {
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 2px 6px rgba(0, 0, 0, 0.2);
+  transform: scale(0.985);
+}
+/* Top-left specular crescent — same language ArchiveScreen uses
+   on its container card, scaled down for a row-level surface. */
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(
+    120% 85% at 18% -10%,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.035) 36%,
+    rgba(255, 255, 255, 0) 62%
+  );
+  z-index: 0;
+}
+.card > * { position: relative; z-index: 1; }
+
+/* Avatar disk — mini liquid-glass puck. The initial sits
+   centered; background is slightly brighter than the row so the
+   letter has visual weight even on the quiet translucent card. */
+.cardAvatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+  font-size: 17px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.82);
+  flex-shrink: 0;
+}
+
+.cardInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.cardName {
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  color: #FFFFFF;
+  line-height: 1.3;
+  letter-spacing: 0.1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Chevron — replaces the old (chevron + trash) pair. Color
+   shifts on press so the user still gets tactile feedback. */
+.cardChevron {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.32);
+  margin-left: 4px;
+  transition: color 0.18s ease, transform 0.18s ease;
+}
+.card:active .cardChevron {
+  color: rgba(255, 255, 255, 0.7);
+  transform: translateX(2px);
+}
+
+/* ── Footer add button — liquid-glass pill ──────────────────
+   Same vocabulary as the cards but slightly more opaque so it
+   reads as the single primary action of the screen. */
+.footer {
+  flex-shrink: 0;
+  padding: 12px 25px calc(30px + env(safe-area-inset-bottom, 0px));
+}
+
+.addBtn {
+  position: relative;
+  width: 100%;
+  height: 54px;
+  border-radius: 27px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  color: #FFFFFF;
+  cursor: pointer;
+  overflow: hidden;
+
+  background: rgba(22, 24, 28, 0.62);
+  backdrop-filter: url(#liquidGlass) blur(24px) saturate(1.5) brightness(1.02);
+  -webkit-backdrop-filter: blur(24px) saturate(1.5) brightness(1.02);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.35),
+    0 10px 28px rgba(0, 0, 0, 0.45);
+  transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+.addBtn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(
+    120% 85% at 18% -10%,
+    rgba(255, 255, 255, 0.18) 0%,
+    rgba(255, 255, 255, 0.06) 38%,
+    rgba(255, 255, 255, 0) 62%
+  );
+  z-index: 0;
+}
+.addBtn > * { position: relative; z-index: 1; }
+.addBtn:active {
+  background: rgba(255, 255, 255, 0.12);
+  transform: scale(0.985);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.24),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.3),
+    0 6px 18px rgba(0, 0, 0, 0.4);
+}

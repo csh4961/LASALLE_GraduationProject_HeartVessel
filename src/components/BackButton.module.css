@@ -1,0 +1,101 @@
+/* ============================================================
+   BackButton — liquid-glass circle + drawn chevron
+   ============================================================
+   Replaces the legacy /asset/Button/BackButton.png sprite that
+   was used in 8 screen headers. The sprite was an opaque dark
+   disc + white arrow baked into one PNG; now that the rest of
+   the chrome (nav bar, chat button, top/bottom header zones)
+   has moved to a translucent liquid-glass material, the back
+   button needed to follow suit or it'd stand out as the only
+   remaining flat-opaque surface.
+
+   Recipe mirrors App.module.css `.chatBtn` and ChatScreen
+   `.chatTriggerBtn` for consistency — same rgba base tint,
+   same backdrop-filter blur + saturate, same layered inset
+   specular + dark rim, same drop shadow. Only the ::before /
+   ::after gloss-and-shade pseudos are tuned slightly for a
+   44 px circle vs the 66 px chat circle.
+
+   The chevron is a drawn SVG (not an image) so it inherits
+   currentColor and stays crisp at any DPR. Stroke is 2.2 —
+   heavy enough to read as a confident affordance, thin enough
+   not to fight the glass material. */
+
+.btn {
+  /* Fixed visual footprint — matches the 44×44 legacy sprite so
+     no screen's positioning math needs to change. All visual
+     properties live here; consumers can only supply additional
+     positioning via their own className prop, which is composed
+     AFTER this class in the final className string. */
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  /* ── Liquid-glass material — copy of .chatBtn / .chatTriggerBtn
+     so every glass element on screen reads as the same family. */
+  background: rgba(30, 30, 34, 0.38);
+  backdrop-filter: url(#liquidGlass) blur(22px) saturate(1.6) brightness(1.05);
+  -webkit-backdrop-filter: blur(22px) saturate(1.6) brightness(1.05);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.26),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.42),
+    inset 0 0 16px rgba(255, 255, 255, 0.04),
+    0 10px 28px rgba(0, 0, 0, 0.5);
+  position: relative;
+  overflow: hidden;
+  transition: opacity 0.15s, transform 0.15s;
+}
+/* Top-left specular gloss — the bright crescent that tells the
+   eye "this is a convex glass pellet". Tuned smaller than the
+   66 px button's gloss since the radius is smaller. */
+.btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(
+    115% 80% at 22% -6%,
+    rgba(255, 255, 255, 0.3) 0%,
+    rgba(255, 255, 255, 0.1) 34%,
+    rgba(255, 255, 255, 0) 60%
+  );
+  z-index: 0;
+}
+/* Bottom-right refractive shade — the darker crescent opposite
+   the gloss, which reads as the curvature falling away from the
+   light source. */
+.btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(
+    130% 85% at 85% 115%,
+    rgba(0, 0, 0, 0.32) 0%,
+    rgba(0, 0, 0, 0.14) 30%,
+    rgba(0, 0, 0, 0) 60%
+  );
+  z-index: 0;
+}
+.btn:active {
+  opacity: 0.78;
+  transform: scale(0.94);
+}
+/* The SVG chevron sits above both pseudos — z-index:1 + position:
+   relative lifts it out of the stacking flow of ::before/::after.
+   A soft drop-shadow gives the arrow a tiny bit of depth off the
+   glass surface so it doesn't read as flat sticker-art. */
+.chevron {
+  position: relative;
+  z-index: 1;
+  display: block;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.55));
+}

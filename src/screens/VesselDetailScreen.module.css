@@ -1,0 +1,269 @@
+/* ============================================================
+   VesselDetailScreen — the full letter page
+   ============================================================
+   Opens from the VesselScreen expanded overlay when the user
+   taps the main center content / "See details →" button. Shows
+   the saved entry's final drafted message prominently, the
+   conversation that shaped it, and a footer of meta info.
+
+   Design target: "a letter in a keepsake box" — dark bg, italic
+   serif for emotional/editorial lines (the final message, the
+   recipient name), sans-serif for metadata. Generous air between
+   blocks so the reading feels unhurried, matching the Vessel
+   screen's own editorial tone. Nothing competes with the final
+   message: it's the hero. Everything else is a quiet escort.
+   ============================================================ */
+
+.screen {
+  width: 100%;
+  height: 100%;
+  background: #000000;
+  position: relative;
+  overflow: hidden;
+  color: #FFFFFF;
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+}
+
+/* Back button sits in the top-left safe area, same place as
+   every other sub-screen in the app. Component carries its own
+   glass-circle material; we just position it. */
+.backBtn {
+  position: absolute;
+  top: calc(24px + env(safe-area-inset-top, 0px));
+  left: 20px;
+  z-index: 20;
+}
+
+/* Scroll container — sits BELOW the back button so the button
+   always anchors in the corner even when long transcripts
+   scroll past. Padded to leave room for the chat trigger + nav
+   pill at the bottom of the screen (~120px). */
+.scrollArea {
+  position: absolute;
+  inset: 0;
+  padding:
+    calc(92px + env(safe-area-inset-top, 0px))
+    28px
+    140px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  box-sizing: border-box;
+}
+/* Hide scrollbar — the content's enough of a visual anchor. */
+.scrollArea::-webkit-scrollbar { display: none; }
+.scrollArea { scrollbar-width: none; }
+
+/* ── Header block ────────────────────────────────────────────
+   "To <Name>" (italic serif) + date underneath. Mirrors the
+   header tone of the Vessel expanded overlay (editorial name +
+   quiet metadata) but bigger since this IS the page's heading. */
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 28px;
+}
+.toLabel {
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+/* Italic editorial serif — the recipient name is the emotional
+   anchor of this page. Same face as .detailName on VesselScreen,
+   pulled a step larger since this is the PAGE title rather than
+   a card title. */
+.recipient {
+  font-family: 'PP Editorial New', 'Georgia', serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: 30px;
+  line-height: 36px;
+  letter-spacing: -0.01em;
+  color: #FFFFFF;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.recipientOrnament {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  flex-shrink: 0;
+  transform: translateY(-1px);
+}
+.metaRow {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.55);
+  letter-spacing: 0.02em;
+}
+.metaDot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  display: inline-block;
+}
+
+/* ── Section kicker ─────────────────────────────────────────
+   Small uppercase label that opens each section (Message,
+   Conversation, etc). Keeps the page reading like a structured
+   document without needing card borders. */
+.sectionKicker {
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 180, 186, 0.82);
+  margin: 0 0 12px 0;
+}
+
+/* Hairline divider between major sections. Slightly brighter
+   than the page bg so it reads as structure without shouting. */
+.divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 28px 0;
+  border: 0;
+}
+
+/* ── Final message block — the hero ──────────────────────────
+   The drafted message the user sent / kept. Italic editorial
+   serif at 18px/28px — the same voice as .heroQuoteOpener in
+   ChatScreen. Large quote marks flank the text as typographic
+   bookends so it reads as a captured utterance.  */
+.messageBlock {
+  position: relative;
+  padding: 4px 0 6px;
+}
+.messageText {
+  font-family: 'PP Editorial New', 'Georgia', serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 28px;
+  color: rgba(255, 255, 255, 0.96);
+  margin: 0;
+  white-space: pre-wrap;
+  /* Small first-line flourish — wraps the text with curly quotes
+     rendered as pseudo elements so the body text stays clean.
+     Keeps the "letter" feel of the page. */
+}
+.messageText::before {
+  content: '\201C';
+  display: inline;
+  margin-right: 2px;
+  color: rgba(255, 180, 186, 0.9);
+}
+.messageText::after {
+  content: '\201D';
+  display: inline;
+  margin-left: 2px;
+  color: rgba(255, 180, 186, 0.9);
+}
+
+/* ── Conversation transcript ─────────────────────────────────
+   Shows the back-and-forth that produced the message. Rendered
+   as a compressed chat log — not full chat bubbles (too heavy
+   for an archive view) and not a pure list either. Instead: each
+   turn gets a tiny role label + body, with a left-side hairline
+   that anchors the transcript as a single thread. */
+.transcript {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  position: relative;
+  padding-left: 14px;
+}
+.transcript::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.10);
+}
+.turn {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.turnRoleUser {
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 210, 214, 0.85);
+}
+.turnRoleCoach {
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(180, 220, 255, 0.75);
+}
+.turnBody {
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  color: rgba(255, 255, 255, 0.86);
+  margin: 0;
+  white-space: pre-wrap;
+}
+/* Empty-transcript state for legacy entries saved before we
+   started persisting the full chat. Keeps the section block
+   structure so the page doesn't look broken; copy explains why
+   there's no conversation to show. */
+.transcriptEmpty {
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 20px;
+  color: rgba(255, 255, 255, 0.45);
+  font-style: italic;
+  margin: 0;
+  padding-left: 14px;
+}
+
+/* ── Coach draft context footer ──────────────────────────────
+   If the entry was saved with the coach's nudge / action, show
+   them as a tiny footer block. These aren't essential; they're
+   a nice-to-have for entries created via the new drafting flow. */
+.context {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.contextItem {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.contextLabel {
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.42);
+}
+.contextBody {
+  font-family: 'PP Neue Montreal', 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 20px;
+  color: rgba(255, 255, 255, 0.72);
+  margin: 0;
+}
