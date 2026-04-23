@@ -33,10 +33,27 @@
              icon on the home screen (shorter than the page <title>)
          ════════════════════════════════════════════════════════════ -->
     <link rel="manifest" href="/manifest.json" />
-    <meta name="theme-color" content="#FEF0EC" />
+
+    <!-- theme-color is what Chrome/Android paints behind the status bar
+         when the PWA is installed. We use solid black so the top strip
+         matches the HomeScreen's black canvas instead of flashing the
+         app-bg pink there. -->
+    <meta name="theme-color" content="#000000" />
+
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+
+    <!-- black-translucent (vs the previous `default`): the status bar
+         becomes transparent and the app canvas extends UNDER the notch /
+         dynamic island, with system text rendered white over whatever
+         the canvas paints there. Combined with viewport-fit=cover above,
+         this lets our HomeScreen's black background flow seamlessly into
+         the status-bar area so the notch no longer looks like a
+         separate-coloured strip. The app's existing --sat / --top-padding
+         CSS vars already reserve safe-area room, so the clock / battery
+         icons don't collide with content. -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
     <meta name="apple-mobile-web-app-title" content="Heart Vessel" />
     <meta name="mobile-web-app-capable" content="yes" />
 
