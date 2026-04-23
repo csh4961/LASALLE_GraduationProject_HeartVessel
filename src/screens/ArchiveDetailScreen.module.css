@@ -368,9 +368,15 @@
   50%      { opacity: 1;   transform: translateY(-2px); }
 }
 
-/* Mobile PWA: flat 40pt from viewport top for the back button. */
+/* Mobile PWA: chrome + scroll content both shift up -30pt.
+   See VesselDetailScreen.module.css for the full rationale —
+   same scrollArea structure (padding: calc(92+safe) 28 140) so
+   same mobile override (padding: 62 28 110). */
 @media (max-width: 433px) {
   .backBtn {
-    top: 40px;
+    top: 30px;
+  }
+  .scrollArea {
+    padding: 62px 28px 110px;
   }
 }

@@ -268,11 +268,21 @@
   margin: 0;
 }
 
-/* Mobile PWA: flat 40pt from viewport top for the back button —
-   overrides the desktop `calc(24px + safe-area-inset-top)` which
-   on iPhone 13 resolved to ≈71pt, too far from the top. */
+/* Mobile PWA: chrome + scroll content both shift up.
+   .backBtn flat 30pt (overrides desktop `calc(24 + safe-area)`
+   which was ≈71pt on iPhone 13 — too far from top).
+   .scrollArea padding-top/bottom both drop by 30pt so the
+   editorial text block translates up in lockstep with the
+   button, matching the user's "content should move up too"
+   feedback. On mobile the safe-area-inset-top math in the
+   original padding is also dropped since we're using a flat
+   anchor for chrome — safe-area is already clear of 30+44=74pt
+   on iPhone (safe-area-top ≈47pt, notch sits above that). */
 @media (max-width: 433px) {
   .backBtn {
-    top: 40px;
+    top: 30px;
+  }
+  .scrollArea {
+    padding: 62px 28px 110px;
   }
 }

@@ -169,17 +169,16 @@
   .profileBtn,
   .greeting,
   .alarmBtn {
-    /* Per user: "위에 있는 애들은 맨 위에서 40px 아래". A flat 40pt
-       offset from the physical viewport top (no safe-area math).
-       On iPhone 13 the notch is centre-positioned and ~47pt tall,
-       but the profile (left:25, width:44) and alarm (left:324)
-       sit to either side of the notch, and the greeting text
-       (left:82) begins just past the notch's left edge — so a
-       40pt top doesn't collide with any notch/island geometry
-       on current iPhone hardware. Likewise on Dynamic-Island
-       models: the island spans ~122pt centred horizontally, well
-       clear of this screen's chrome at 40pt y. */
-    top: 40px;
+    /* Per user: "위에 있는거 40 말고 30px로 하자". Flat 30pt offset
+       from physical viewport top (no safe-area math). On iPhone 13
+       the notch is ~47pt tall and centre-positioned; the profile
+       (left:25, width:44) and alarm (left:324) sit to either side
+       of the notch, and greeting (left:82) begins just past the
+       notch's left edge — so 30pt y doesn't collide with any
+       notch/island geometry. Dynamic-Island models: island spans
+       ~122pt centred horizontally, clear of this screen's chrome
+       at 30pt y. */
+    top: 30px;
   }
 
   /* The real nav bar + chat button live in App.jsx / App.module.css
@@ -188,21 +187,24 @@
      element — so the bottom-anchor override for mobile now lives
      in App.module.css's `@media (max-width: 433px)` block. */
 
-  /* Character re-centres vertically on viewport, not canvas.
-     charImg is 437px tall; the original design placed its
-     centre 21pt below canvas-centre (y≈447 in 852 canvas).
-     Offset math: top = 50vh - (437/2 - 21) = 50% - 197.5px. */
+  /* Character re-centres vertically on viewport, not canvas. Per
+     user: "컨텐츠도 그만큼 올라가줘야해. 버튼들만 이동한거같아" —
+     with the top chrome now at 30pt (30pt tighter than the
+     original 60pt design baseline), the content bundle needs to
+     translate up by the same delta so the chrome-to-content gap
+     matches the designed composition. The base offsets used to
+     centre on the design canvas (charImg -197.5, tagline -17,
+     subTagline +40) each get an ADDITIONAL -30 so the whole
+     character/tagline/sub-tagline block sits 30pt higher than
+     viewport-centred. */
   .charImg {
-    top: calc(50% - 197.5px);
+    top: calc(50% - 227.5px);
   }
-  /* Tagline baseline sits ~14pt above its own bounding-box
-     centre; in design it was 17pt above canvas-centre. */
   .tagline {
-    top: calc(50% - 17px);
+    top: calc(50% - 47px);
   }
-  /* Sub-tagline was 40pt below canvas-centre. */
   .subTagline {
-    top: calc(50% + 40px);
+    top: calc(50% + 10px);
   }
 
   /* Keep the float-cycle transform for charImg aligned with

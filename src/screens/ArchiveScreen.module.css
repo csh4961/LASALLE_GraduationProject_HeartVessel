@@ -354,9 +354,24 @@
   transform: translateX(2px);
 }
 
-/* Mobile PWA: pull the top chrome up to match HomeScreen. */
+/* Mobile PWA: chrome + content all shift -30 relative to their
+   original design-canvas coordinates, so the chrome-to-hero gap
+   and the hero-to-tagline-to-card rhythm stay proportionate on
+   a mobile viewport instead of leaving empty space below the
+   now-higher back button. Card bottom stays put so the card just
+   grows slightly taller — the extra 30pt becomes more scroll
+   area for the entry list. */
 @media (max-width: 433px) {
   .backBtn {
-    top: 40px;
+    top: 30px;
+  }
+  .heroImg {
+    top: 33px;
+  }
+  .taglineWrap {
+    top: 162px;
+  }
+  .card {
+    top: 213px;
   }
 }

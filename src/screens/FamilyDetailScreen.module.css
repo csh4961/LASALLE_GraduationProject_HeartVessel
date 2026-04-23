@@ -355,17 +355,23 @@
   background: rgba(255, 255, 255, 0.05);
 }
 
-/* Mobile PWA: pull top chrome up to the flat 40pt anchor.
-   .backBtn was at top:60 (44pt tall → centre at y≈82).
-   .editBtn was at top:65 (34pt tall → centre at y≈82) so it
-   shared a vertical centre line with backBtn. Keeping the same
-   shared centre: backBtn moves to top:40 (centre at y≈62), so
-   editBtn's 34pt height means top = 62 - 17 = 45. */
+/* Mobile PWA: chrome + hero content shift up -30pt.
+   .backBtn was at top:60 (44pt tall → centre y≈82).
+   .editBtn was at top:65 (34pt tall → centre y≈82) so they
+   shared a vertical centre. Keeping shared centre on mobile:
+   backBtn at top:30 (centre y≈52), editBtn at top:52-17 = 35.
+   .heroArea padding-top 120 → 90 so the avatar + name block
+   translates up in lockstep with the chrome — otherwise the
+   now-smaller chrome area would just add empty space above
+   the hero. */
 @media (max-width: 433px) {
   .backBtn {
-    top: 40px;
+    top: 30px;
   }
   .editBtn {
-    top: 45px;
+    top: 35px;
+  }
+  .heroArea {
+    padding-top: 90px;
   }
 }

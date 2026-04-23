@@ -6466,24 +6466,32 @@
 }
 
 /* ────────────────────────────────────────────────────────────
-   Mobile PWA re-anchoring — flat 40pt top / 20pt bottom
+   Mobile PWA re-anchoring — flat 30pt top / 20pt bottom
    ────────────────────────────────────────────────────────────
-   Matches the same rule the rest of the app uses on mobile:
-     - top chrome (back button + person label) at top: 40
+   Matches the rule the rest of the app uses on mobile:
+     - top chrome (back button + person label) at top: 30
      - bottom rails (chat trigger round button, slide chat bar,
        archive reply chat bar) at bottom: 20 so they hug the
        home-indicator gesture strip like the global nav pill.
+     - messages area padding shrinks in lockstep (-30 top,
+       -30 bottom) so the messages block translates up with
+       the chrome. Without this the chrome moved but the
+       message column stayed anchored at padding-top:122 /
+       padding-bottom:180, opening a visible empty band.
    Desktop keeps the design-canvas 60pt top and the safe-area-
    based bottom because there's no home indicator to hug.
    ──────────────────────────────────────────────────────────── */
 @media (max-width: 433px) {
   .backBtn,
   .personLabel {
-    top: 40px;
+    top: 30px;
   }
   .chatTriggerBtn,
   .slideChatBar,
   .archiveChatBar {
     bottom: 20px;
+  }
+  .messagesArea {
+    padding: 92px 25px 150px;
   }
 }

@@ -267,11 +267,17 @@
     0 6px 18px rgba(0, 0, 0, 0.4);
 }
 
-/* Mobile PWA: pull back button + title chrome up to match the
-   flat 40pt anchor the other screens use. */
+/* Mobile PWA: chrome at 30pt + header band shortens so the list
+   content sitting below the header starts 30pt higher. The
+   .header is flex-shrink:0 with a fixed height that acts as the
+   spacer for the absolute-positioned chrome inside it; shrinking
+   it from 104 to 74 pulls the list up by the same 30pt. */
 @media (max-width: 433px) {
   .backBtn,
   .title {
-    top: 40px;
+    top: 30px;
+  }
+  .header {
+    height: 74px;
   }
 }
