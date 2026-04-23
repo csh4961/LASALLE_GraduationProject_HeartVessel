@@ -121,12 +121,36 @@ html, body {
   flex-shrink: 0;
 }
 
-/* 뷰포트가 좁으면 화면에 맞게 축소 */
+/* ── Mobile viewport (≤ 433px wide) ─────────────────────────
+   Fill the device viewport edge-to-edge. Previously the canvas
+   kept its designed 393:852 aspect ratio with
+   `height: calc(100vw * 852 / 393); max-height: 100dvh;` which,
+   combined with viewport-fit=cover and the translucent status
+   bar, left ~20-40px of unused black strip above and below the
+   canvas (the html/body flex-centered it inside the taller
+   100dvh viewport). Visually that made the profile chrome and
+   the bottom nav look floated away from the notch / home
+   indicator.
+
+   Switching to `height: 100dvh` pins the canvas to the full
+   physical viewport. Children use absolute pixel positioning:
+     - top-anchored  (profile / alarm at top:60)          →
+       sit 60pt below the notch (inside safe area)
+     - bottom-anchored (nav bars at bottom:calc(30+safe-area)) →
+       hug the home indicator
+     - middle elements (character at top:229, tagline at 409,
+       sub-tagline at 466) sit around y≈447 in the canvas,
+       which is within a couple pt of viewport vertical centre
+       on iPhone 15/16 Pro / Pro Max / Plus — so they read as
+       centred without any per-element rewrite.
+   Horizontal width stays 100vw, so the 393-wide design still
+   has its natural left/right bleed absorbed by the device
+   width (≤ 430pt on even the widest current iPhones).
+   -------------------------------------------------------- */
 @media (max-width: 433px) {
   #root {
     width: 100vw;
-    height: calc(100vw * 852 / 393);
-    max-height: 100dvh;
+    height: 100dvh;
     border-radius: 0;
   }
 }
