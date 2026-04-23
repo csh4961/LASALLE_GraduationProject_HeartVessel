@@ -182,15 +182,11 @@
     top: 40px;
   }
 
-  .navBar,
-  .chatBtn {
-    /* Per user: "밑에 있는 애들은 화면 맨 밑에서 위로 40px". Flat
-       40pt from physical viewport bottom. The 34pt home-indicator
-       gesture region is visually subtle, so a 40pt anchor still
-       keeps nav tap-targets clear of the system gesture area
-       while reading as "hugging the bottom". */
-    bottom: 40px;
-  }
+  /* The real nav bar + chat button live in App.jsx / App.module.css
+     (GlobalNav). HomeScreen's own `.navBar` / `.chatBtn` rules
+     below are dead code — their CSS-module hash doesn't match any
+     element — so the bottom-anchor override for mobile now lives
+     in App.module.css's `@media (max-width: 433px)` block. */
 
   /* Character re-centres vertically on viewport, not canvas.
      charImg is 437px tall; the original design placed its

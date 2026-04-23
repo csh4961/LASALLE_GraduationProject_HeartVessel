@@ -514,3 +514,24 @@
   from { opacity: 0; }
   to   { opacity: 1; }
 }
+
+/* ────────────────────────────────────────────────────────────
+   Mobile PWA: hug the home indicator tighter
+   ────────────────────────────────────────────────────────────
+   Per user: "내비게이션은 40 말고 20px만 하자." The global nav
+   pill + chat button previously sat at `bottom: calc(30px +
+   safe-area-inset-bottom)` — on iPhone 13 (safe-area-bottom ≈
+   34pt home-indicator region) that resolves to ≈64pt from the
+   physical viewport bottom, which read as a large gap between
+   the pill and the home indicator. Flattening to `bottom: 20px`
+   pulls the bar down against the gesture strip while still
+   clearing the ~34pt home-indicator touch region with a visible
+   buffer. Desktop keeps the original safe-area-based position
+   because there's no home indicator to hug.
+   ──────────────────────────────────────────────────────────── */
+@media (max-width: 433px) {
+  .navBar,
+  .chatBtn {
+    bottom: 20px;
+  }
+}

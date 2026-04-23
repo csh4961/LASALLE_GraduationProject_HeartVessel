@@ -266,3 +266,12 @@
     inset 0 -1px 0 rgba(0, 0, 0, 0.3),
     0 6px 18px rgba(0, 0, 0, 0.4);
 }
+
+/* Mobile PWA: pull back button + title chrome up to match the
+   flat 40pt anchor the other screens use. */
+@media (max-width: 433px) {
+  .backBtn,
+  .title {
+    top: 40px;
+  }
+}

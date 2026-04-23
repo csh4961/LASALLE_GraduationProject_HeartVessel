@@ -354,3 +354,18 @@
   height: 1px;
   background: rgba(255, 255, 255, 0.05);
 }
+
+/* Mobile PWA: pull top chrome up to the flat 40pt anchor.
+   .backBtn was at top:60 (44pt tall → centre at y≈82).
+   .editBtn was at top:65 (34pt tall → centre at y≈82) so it
+   shared a vertical centre line with backBtn. Keeping the same
+   shared centre: backBtn moves to top:40 (centre at y≈62), so
+   editBtn's 34pt height means top = 62 - 17 = 45. */
+@media (max-width: 433px) {
+  .backBtn {
+    top: 40px;
+  }
+  .editBtn {
+    top: 45px;
+  }
+}

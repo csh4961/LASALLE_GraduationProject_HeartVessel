@@ -367,3 +367,10 @@
   0%, 100% { opacity: 0.25; transform: translateY(0); }
   50%      { opacity: 1;   transform: translateY(-2px); }
 }
+
+/* Mobile PWA: flat 40pt from viewport top for the back button. */
+@media (max-width: 433px) {
+  .backBtn {
+    top: 40px;
+  }
+}

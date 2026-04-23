@@ -267,3 +267,12 @@
   color: rgba(255, 255, 255, 0.72);
   margin: 0;
 }
+
+/* Mobile PWA: flat 40pt from viewport top for the back button —
+   overrides the desktop `calc(24px + safe-area-inset-top)` which
+   on iPhone 13 resolved to ≈71pt, too far from the top. */
+@media (max-width: 433px) {
+  .backBtn {
+    top: 40px;
+  }
+}

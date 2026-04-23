@@ -459,3 +459,12 @@
   transform: translateX(0);
   transition: transform 0.2s ease;
 }
+
+/* Mobile PWA: pull the top chrome (back button) up to match the
+   HomeScreen treatment — flat 40pt from viewport top rather than
+   the design-canvas 60pt. See HomeScreen.module.css for rationale. */
+@media (max-width: 433px) {
+  .backBtn {
+    top: 40px;
+  }
+}

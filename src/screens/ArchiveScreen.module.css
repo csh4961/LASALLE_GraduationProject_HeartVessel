@@ -353,3 +353,10 @@
   color: rgba(255, 255, 255, 0.7);
   transform: translateX(2px);
 }
+
+/* Mobile PWA: pull the top chrome up to match HomeScreen. */
+@media (max-width: 433px) {
+  .backBtn {
+    top: 40px;
+  }
+}
